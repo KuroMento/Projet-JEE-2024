@@ -16,7 +16,7 @@ import java.util.Locale;
 import org.hibernate.Session;
 
 /**
- * This servlet checks if the login information are correct
+ * This servlet checks if the login information are correct.
  */
 public class LoginController extends HttpServlet{
     @Override
@@ -53,6 +53,10 @@ public class LoginController extends HttpServlet{
         doGet(req, resp);
     }
 
+    /**
+     * 
+     * @return The users in the database as a list.
+     */
     public static List<User> getListUsers() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -61,6 +65,11 @@ public class LoginController extends HttpServlet{
         return result;
     }
 
+    /**
+     * Compares all users in the database to the one that tries to log in.
+     * @param user The user that tries to log in.
+     * @return True if the user is in the database, else false.
+     */
     private Boolean isUserValid(User user) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
@@ -79,6 +88,11 @@ public class LoginController extends HttpServlet{
         return false;
     }
 
+    /**
+     * Give the according role to the user once the login is successful.
+     * @param user The user that successfully logged in.
+     * @param id User id in the database.
+     */
     private void givePermissions(User user, int id){
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
