@@ -67,7 +67,7 @@ public class LoginController extends HttpServlet{
         List<User> userList;
         userList = getListUsers();
         for (int i = 0; i < userList.size(); i++) {
-            if (user.getFirstName() == userList.get(i).getFirstName() && user.getLastName() == userList.get(i).getLastName() && user.getContact() == userList.get(i).getContact() && user.getIdentification() == userList.get(i).getIdentification() && user.getCryptedPassword() == userList.get(i).getCryptedPassword() && user.getDateOfBirth() == userList.get(i).getDateOfBirth()) {//if a user is in the database, then return his id in the base and confirm the login
+            if (user.getFirstName().equals(userList.get(i).getFirstName()) && user.getLastName().equals(userList.get(i).getLastName()) && user.getContact().equals(userList.get(i).getContact()) && user.getIdentification().equals(userList.get(i).getIdentification()) && user.getCryptedPassword().equals(userList.get(i).getCryptedPassword()) && user.getDateOfBirth().equals(userList.get(i).getDateOfBirth())) {//if a user is in the database, then return his id in the base and confirm the login
                 givePermissions(user, i);
                 session.getTransaction().commit();
                 session.close();
@@ -84,7 +84,7 @@ public class LoginController extends HttpServlet{
         session.beginTransaction();
         List<User> userList;
         userList = getListUsers();
-        if(userList.get(id).getPermissions() == Permissions.ADMIN){
+        if(userList.get(id).getPermissions().equals(Permissions.ADMIN)){
             user.setPermissions(Permissions.ADMIN);
         }
         if(userList.get(id).getPermissions() == Permissions.TEACHER){
