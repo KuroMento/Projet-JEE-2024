@@ -1,0 +1,96 @@
+/************************
+* Mise en page général de la page *
+*************************/
+html {
+    margin: 0;
+    padding: 0;
+    background-color: #36393f;
+    color: #ffffff;
+    /* Theme du site (ie, les couleurs)
+
+    Fond sombre : #1f1f1f
+    Texte principal : #ffffff
+    Texte secondaire : #b9bbbe
+    Accent pour erreur : navy ou #080000
+    Accent constraste : #ff66fc
+    Arrière-plan de la barre de navigation (balise nav): #36393f
+    Lien non visité : #f6a50b
+    Lien visité : #ff66fc
+    */
+}
+
+body{
+    display: grid;
+    grid-template-rows: 10vh 80vh 10vh;
+    grid-template-columns: 20vw 80vw;
+    grid-template:
+            "logo header"
+            "aside main"
+            "footer footer";
+    grid-auto-flow: dense;
+    min-height: 100vh;
+    min-width: 400px;
+}
+
+.logo{
+    display: flex;
+    grid-area: logo;
+    border: 10px dashed red;
+}
+
+header {
+    display : flex;
+    grid-area: header;
+    justify-content: center;
+    align-items: end;
+}
+
+nav {
+    grid-area: aside;
+}
+
+main {
+    grid-area: main;
+}
+
+footer {
+    grid-area: footer;
+}
+/************************
+* Mise en forme des catégories/options de la page *
+*************************/
+
+.categories{
+    display:flex;
+    flex: max-content;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: end;
+}
+
+.categories ul{
+    padding: 0;
+    margin: 0;
+
+    font-family: "Times";
+    font-size: 15pt;
+    background:linear-gradient(to bottom, #f6a50b 5%, #E15F3A 100%);
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+
+    width: 100%;
+    height: 46px;
+}
+
+.categories li{
+    flex: auto;
+    list-style-type: none;
+    text-align: center;
+    height: 100%;
+    padding: 15px 5vw;
+}

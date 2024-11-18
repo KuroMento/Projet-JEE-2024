@@ -1,0 +1,16 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="model.Projection" table="projection" schema="ecole">
+        <composite-id mapped="true" class="model.ProjectionPK">
+            <key-property name="numCine" column="num_cine"/>
+            <key-property name="numFilm" column="num_film"/>
+            <key-property name="pdate" column="pdate"/>
+        </composite-id>
+        <property name="fk1Projection" column="fk1_projection"/>
+        <property name="fk2Projection" column="fk2_projection"/>
+    </class>
+</hibernate-mapping>
