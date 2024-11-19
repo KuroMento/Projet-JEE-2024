@@ -24,14 +24,14 @@ public class User implements Serializable {
     /**
      * The email address
      */
-    @Column(name = "contact", unique = true, updatable = false, nullable = false, length=50)
+    @Column(name = "contact", nullable = false, length=50)
     private String contact;
     /**
      * The unique identifier
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false, length=50)
+    @Column(name = "id", unique = true, updatable = false,  nullable = false, length=50)
     private String identification;
     /**
      * The encrypted password
