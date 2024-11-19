@@ -1,7 +1,5 @@
 package fr.cyu.jee.model;
 
-
-
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -11,46 +9,46 @@ import java.util.Date;
  * User represents a person that can be a Teacher, a Student or an Administrator
  */
 @Entity
-@Table(name = "")
+@Table(name = "Users")
 public class User implements Serializable {
     /**
      * The last name of the user
      */
-    @Column(name = "", nullable = false, length=50)
+    @Column(name = "lastName", nullable = false, length=50)
     private String lastName;
     /**
      * The first name of the user
      */
-    @Column(name = "", nullable = false, length=50)
+    @Column(name = "firstName", nullable = false, length=50)
     private String firstName;
     /**
      * The email address
      */
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "", unique = true, updatable = false, nullable = false, length=50)
+    @Column(name = "contact", unique = true, updatable = false, nullable = false, length=50)
     private String contact;
     /**
      * The unique identifier
      */
-    @Column(name = "", nullable = false, length=50)
+    @Column(name = "id", nullable = false, length=50)
     private String identification;
     /**
      * The encrypted password
      */
-    @Column(name = "", nullable = false, length=50)
+    @Column(name = "encryptedPassword", nullable = false, length=50)
     private String cryptedPassword;
     /**
      * The date of birth
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "", nullable = false, length=50)
+    @Column(name = "dateOfBirth", nullable = false, length=50)
     private Date dateOfBirth;
     /**
      * The permissions of the user
      */
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "", nullable = false, length=50)
+    @Column(name = "rights", nullable = false, length=50)
     private Permissions permissions;
 
     public User(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth, Permissions permissions) {
