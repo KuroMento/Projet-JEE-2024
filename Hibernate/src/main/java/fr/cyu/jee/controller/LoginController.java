@@ -30,9 +30,13 @@ public class LoginController extends HttpServlet{
             req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
         }
         else{//if the data entered is valid
-            User user = new User(lastName, firstName, contact, identification, cryptedPassword, dateOfBirth, permissions);
+            User user = new User(lastName, firstName, contact, identification, cryptedPassword, dateOfBirth, permissions); //A temporary user used to check his presence in the database or not
             if(isUserValid(user)){
                 req.getRequestDispatcher("/index.jsp").forward(req, resp);
+            }
+            else{
+                req.setAttribute("error", "The information given is incorrect");
+                req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
             }
         }
     }
@@ -62,8 +66,7 @@ public class LoginController extends HttpServlet{
     private Boolean isUserValid(User user) {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
-        List<User> userList;
-        userList = getListUsers();
+        List<User> userList = getListUsers();
         for (int i = 0; i < userList.size(); i++) {
             if (user.getIdentification().equals(userList.get(i).getIdentification()) && user.getCryptedPassword().equals(userList.get(i).getCryptedPassword())) {//if a user is in the database, then return his id in the base and confirm the login
                 givePermissions(user, i);
