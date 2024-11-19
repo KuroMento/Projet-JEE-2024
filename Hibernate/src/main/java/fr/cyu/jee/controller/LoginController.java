@@ -26,7 +26,7 @@ public class LoginController extends HttpServlet{
         Date dateOfBirth = null;
         Permissions permissions = null;
         if(identification.isEmpty() || cryptedPassword.isEmpty()){ //if the data entered is not valid
-            req.setAttribute("error", "All data must be completed"); //pas la bonne méthode, à changer mais reste la pour l'instant
+            req.setAttribute("error", "All data must be completed");
             req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
         }
         else{//if the data entered is valid
