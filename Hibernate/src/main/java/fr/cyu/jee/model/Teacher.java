@@ -17,6 +17,14 @@ public class Teacher extends User implements IGrade, Serializable {
 
     @Override
     public void saveGrade() {
+        
+    }
+    
+    public List<Course> getCourses() {
+        return courses;
+    }
 
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
 }
