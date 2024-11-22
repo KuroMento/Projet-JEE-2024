@@ -8,39 +8,28 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Projet JEE</title>
-    <link rel="stylesheet" type="text/css" href="/css/style.css">
-</head>
+    <head>
+        <title>CY JEE</title>
+        <link rel="stylesheet" type="text/css" href="/css/style.css">
+    </head>
 <body>
-    <div class="logo">
-        Logo
-    </div>
-    <header>
-        <div class="categories">
-            <ul>
-                <li><a href="/FrontController?categorie=subject"> Matière </a></li>
-                <li><a href="/FrontController?categorie=class"> Cours </a></li>
-                <li><a href="/FrontController?categorie=user"> Enseignant | Student </a></li>
-                <li><a href="/FrontController?categorie=grade"> Grade </a></li>
-            </ul>
-        </div>
-        <div class="login">
-            <a href="/FrontController?action=home">S'authentifier</a>
-        </div>
-    </header>
-    <nav>Aside</nav>
+    <jsp:include page="../jsp_fragments/logo.jsp"/>
+    <jsp:include page="../jsp_fragments/header.jsp"/>
+    <jsp:include page="../jsp_fragments/options.jsp"/>
     <main>
-        <h1>Page de connexion</h1>
-        <form method="post" action="/FrontController">
-            <label name="id"> Identifiant :</label>
-            <input type="text" required name="id">
-            <br>
-            <label name="password"> Mot de passe :</label>
-            <input type="password" required name="pw">
-            <br>
-            <input type="submit" value="Cliquez">
-        </form>
+        <div class="login_form">
+            <form method="post" action="/FrontController">
+                <label name="id"> Identifiant :</label>
+                <input type="text" required name="id">
+                <br>
+                <label name="password"> Mot de passe :</label>
+                <input type="password" required name="pw">
+                <br>
+                <input type="submit" value="Cliquez">
+            </form>
+            <p> If you want to test the site as an admin, you  </p>
+        </div>
     </main>
-    <footer>Footer</footer>
+    <jsp:include page="../jsp_fragments/footer.jsp"/>
 </body>
 </html>
