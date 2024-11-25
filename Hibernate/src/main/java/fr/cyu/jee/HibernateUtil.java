@@ -1,5 +1,6 @@
 package fr.cyu.jee;
 
+import fr.cyu.jee.model.*;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
@@ -11,7 +12,14 @@ public class HibernateUtil {
     static {
         try {
             Configuration configuration = new Configuration();
-            configuration.configure();
+            configuration.configure("hibernate.cfg.xml")
+                    .addAnnotatedClass(Subject.class)
+                    .addAnnotatedClass(User.class)
+                    .addAnnotatedClass(Course.class)
+                    .addAnnotatedClass(Grade.class)
+                    .addAnnotatedClass(Teacher.class)
+                    .addAnnotatedClass(Student.class)
+                    .addAnnotatedClass(Administrator.class);
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(configuration.getProperties()).build();
             sessionFactory = configuration.buildSessionFactory(serviceRegistry);
         }

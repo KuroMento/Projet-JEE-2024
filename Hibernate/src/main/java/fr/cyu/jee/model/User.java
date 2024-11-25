@@ -1,15 +1,15 @@
 package fr.cyu.jee.model;
 
-import jakarta.persistence.*;
-
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Date;
+import java.util.*;
 
 /**
  * User represents a person that can be a Teacher, a Student or an Administrator
  */
 @Entity
 @Table(name = "Users")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable {
     /**
      * The last name of the user
@@ -51,14 +51,13 @@ public class User implements Serializable {
     @Column(name = "rights", nullable = false, length=50)
     private Permissions permissions;
 
-    public User(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth, Permissions permissions) {
+    public User(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.contact = contact;
         this.identification = identification;
         this.cryptedPassword = cryptedPassword;
         this.dateOfBirth = dateOfBirth;
-        this.permissions = permissions;
     }
 
     public User() {

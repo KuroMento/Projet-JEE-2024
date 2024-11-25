@@ -1,13 +1,16 @@
 package fr.cyu.jee.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
  * The class representing a composed / foreign key in Grade.
  */
 public class GradeId implements Serializable {
+    @Column(name = "studentId", updatable = false, nullable = false, length=50)
     private int studentId;
-    private int classId;
+    @Column(name = "courseId", updatable = false, nullable = false, length=50)
+    private int courseId;
 
     public int getStudentId() {
         return studentId;
@@ -18,10 +21,10 @@ public class GradeId implements Serializable {
     }
 
     public int getClassId() {
-        return classId;
+        return courseId;
     }
 
     public void setClassId(int classId) {
-        this.classId = classId;
+        this.courseId = classId;
     }
 }

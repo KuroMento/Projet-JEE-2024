@@ -1,21 +1,17 @@
 package fr.cyu.jee.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.*;
 
 @Entity
-@Table(name = "")
+@Table(name = "Grades")
 public class Grade implements Serializable {
     @EmbeddedId
-    @Column(name = "", unique = true, updatable = false, nullable = false, length=50)
     private GradeId id;
-    @Column(name = "", updatable = false, nullable = false, length=50)
+    @Column(name = "grade_value", updatable = false, nullable = false, length=50)
     private double value;
-    @Column(name = "", updatable = false, nullable = false, length=50)
+    @Column(name = "grade_coefficient", updatable = false, nullable = false, length=50)
     private double coefficient;
 
     public double getValue() {

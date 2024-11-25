@@ -1,20 +1,20 @@
 package fr.cyu.jee.model;
 
-import jakarta.persistence.Column;
-
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.*;
 
 @Entity
-@Table(name = "")
 public class Student extends User implements Serializable {
 
-    @Column(name = "", updatable = false, nullable = false, length=50)
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id")
+    )
     private List<Course> courses;
     public Student(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth) {
-        super(lastName, firstName, contact, identification, cryptedPassword, dateOfBirth, Permissions.STUDENT);
+        super(lastName, firstName, contact, identification, cryptedPassword, dateOfBirth);
     }
 
     public List<Course> getCourses() {

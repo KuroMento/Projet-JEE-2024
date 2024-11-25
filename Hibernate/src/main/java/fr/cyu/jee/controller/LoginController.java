@@ -1,14 +1,18 @@
 package fr.cyu.jee.controller;
 
 import fr.cyu.jee.HibernateUtil;
+import fr.cyu.jee.model.Permissions;
 import fr.cyu.jee.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Session;
+import org.hibernate.query.Query;
+import org.hibernate.tool.ant.QueryExporterTask;
 
 /**
  * This servlet checks if the login information are correct.
@@ -16,19 +20,20 @@ import org.hibernate.Session;
 public class LoginController extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String identification = req.getParameter("identification");
-        String cryptedPassword = req.getParameter("cryptedPassword");
-        if(identification.isEmpty() || cryptedPassword.isEmpty()){ //if the data entered is not valid
-            req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
+        String id = req.getParameter("id");
+        String pw = req.getParameter("pw");
+
+        if( id == null || pw == null ){
+            req.setAttribute("error", "A parameter is missing");
         }
-        else{//if the data entered is valid
-            if(isUserValid(identification, cryptedPassword)){
-                req.getRequestDispatcher("/index.jsp").forward(req, resp);
+        else{
+            User loggedUser = getUser(id,pw);
+            if (loggedUser == null ){
+                req.setAttribute("error", "The id or the password is incorrect");
             }
-            else{
-                req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
-            }
+            req.getSession().setAttribute("user", loggedUser);
         }
+        req.getRequestDispatcher("/index.jsp").forward(req, resp);
     }
 
     @Override
@@ -41,33 +46,26 @@ public class LoginController extends HttpServlet{
      * @return The users in the database as a list.
      */
     public static List<User> getListUsers() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<User> result = session.createQuery("from User").list();
-        session.close();
-        return result;
+        // Session session = HibernateUtil.getSessionFactory().openSession();
+        // session.beginTransaction();
+        // List<User> result = session.createQuery("from User").list();
+        // session.close();
+        // return result;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "FROM User";
+            Query<User> query = session.createQuery(hql, User.class);
+            return query.getResultList();
+        }
     }
 
-    /**
-     * Compares all users in the database to the one that tries to log in.
-     * @param  id of the user
-     * @param password user's crypted password
-     * @return True if the user is in the database, else false.
-     */
-    private Boolean isUserValid(String id , String password) {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<User> userList = getListUsers();
-        for (int i = 0; i < userList.size(); i++) {
-            if (id.equals(userList.get(i).getIdentification()) && password.equals(userList.get(i).getCryptedPassword())) {//if a user is in the database, then return his id in the base and confirm the login
-                session.getTransaction().commit();
-                session.close();
-                return true;
-            }
+    public static User getUser(String id, String pw){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "FROM User WHERE id = :id AND encryptedPassword = :pw";
+            Query<User> userQuery = session.createQuery(hql)
+                    .setParameter("id",id)
+                    .setParameter("pw",pw);
+            return userQuery.uniqueResult();
         }
-        session.getTransaction().commit();
-        session.close();
-        return false;
     }
 
 }

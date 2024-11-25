@@ -2,17 +2,20 @@ package fr.cyu.jee.model;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * The class that represents different subjects and their labels
  */
+
 @Entity
 @Table(name = "Subjects")
 public class Subject implements Serializable {
     /**
      * The name of the class
      */
-    @Column(name = "label", updatable = false, nullable = false, length=50)
+    @Basic
+    @Column(name = "label", nullable = true, length = 30)
     private String label;
     /**
      * A short description of the class content
@@ -25,18 +28,23 @@ public class Subject implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, updatable = false, nullable = false, length=50)
-    private int identificationNumber;
+    private Long identification;
     /**
      * A number indicating the prevalence of the class within a module.
      */
-    @Column(name = "coefficient", updatable = false, nullable = false, length=50)
+    @Basic
+    @Column(name = "subject_coefficient", nullable = false, precision = 0)
     private double coefficient;
 
-    public Subject(String label, String description, int identificationNumber, double coefficient){
+    @OneToMany(mappedBy = "subject",cascade = CascadeType.ALL)
+    private List<Course> courses;
+
+    public Subject(String label, String description, Long identification, double coefficient, List<Course> courses){
         this.label = label;
         this.description = description;
-        this.identificationNumber = identificationNumber;
+        this.identification = identification;
         this.coefficient = coefficient;
+        this.courses = courses;
     }
 
     public Subject(){
@@ -78,16 +86,16 @@ public class Subject implements Serializable {
      *
      * @return the identifier for the subject
      */
-    public int getIdentificationNumber(){
-        return identificationNumber;
+    public Long getIdentification(){
+        return identification;
     }
 
     /**
      *
-     * @param identificationNumber the identifier for the subject
+     * @param identification the identifier for the subject
      */
-    public void setIdentificationNumber(int identificationNumber) {
-        this.identificationNumber = identificationNumber;
+    public void setIdentification(Long identification) {
+        this.identification = identification;
     }
 
     /**
@@ -104,5 +112,19 @@ public class Subject implements Serializable {
      */
     public void setCoefficient(double coefficient) {
         this.coefficient = coefficient;
+    }
+
+    /**
+     * @return subject's available courses.
+     */
+    public List<Course> getCourses() {
+        return courses;
+    }
+
+    /**
+     * @param courses subject's available courses.
+     */
+    public void setCourses(List<Course> courses) {
+        this.courses = courses;
     }
 }
