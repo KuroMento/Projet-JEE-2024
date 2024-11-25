@@ -17,40 +17,7 @@ import java.util.List;
 public class CoursesController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String isLoggedString = req.getParameter("logged");
-        String userIdString = req.getParameter("userId");
-        List<Course> coursesList = null;
-        int intId = 0;
-        List<User> userList = getListUsers();
-        if(isLoggedString.equals("True")){
-            for(int i = 0; i < userList.size(); i++) {
-                if (userIdString.equals(userList.get(i).getIdentification())) {
-                    intId = i;//get the id in the userList
-                }
-            }
-            if(userList.get(intId).getPermissions() == Permissions.STUDENT){
-                List<Student> studentList = getListStudents();
-                for(int i = 0; i < studentList.size(); i++) {
-                    if (userIdString.equals(studentList.get(i).getIdentification())) {
-                        intId = i;//get the id in the studentList
-                    }
-                }
-                coursesList = studentList.get(intId).getCourses();
-            }
-            if(userList.get(intId).getPermissions() == Permissions.TEACHER){
-                List<Teacher> teacherList = getListTeachers();
-                for(int i = 0; i < teacherList.size(); i++) {
-                    if (userIdString.equals(teacherList.get(i).getIdentification())) {
-                        intId = i;//get the id in the teacherList
-                    }
-                }
-                coursesList = teacherList.get(intId).getCourses();
-            }
-            req.setAttribute("CoursesList", coursesList);
-        }
-        else{
-            req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp); //if the user is not logged, send him back to connexion page
-        }
+        req.getRequestDispatcher("WEB-INF/course.jsp").forward(req, resp);
     }
 
     @Override

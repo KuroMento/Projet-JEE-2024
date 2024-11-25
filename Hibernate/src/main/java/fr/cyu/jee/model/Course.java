@@ -1,23 +1,27 @@
 package fr.cyu.jee.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.*;
+
 @Entity
-@Table(name = "")
-public class Course{
+@Table(name = "Courses")
+public class Course implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "", unique = true, updatable = false, nullable = false, length=50)
-    private int identification;
-    @ManyToMany
+    @Column(name = "id", unique = true, updatable = false, nullable = false, length=50)
+    private Long identification;
+    @ManyToMany(mappedBy = "courses")
     private List<Student> students;
     @ManyToOne
-    @JoinColumn(name = "teacher", nullable = false)
+    @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
 
+    @ManyToOne
+    @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
-    public Course(int identification, List<Student> students, Teacher teacher, Subject subject) {
+    public Course(Long identification, List<Student> students, Teacher teacher, Subject subject) {
         this.identification = identification;
         this.students = students;
         this.teacher = teacher;
@@ -26,11 +30,11 @@ public class Course{
 
     public Course(){}
 
-    public int getIdentification() {
+    public Long getIdentification() {
         return identification;
     }
 
-    public void setIdentification(int identification) {
+    public void setIdentification(Long identification) {
         this.identification = identification;
     }
 
@@ -57,4 +61,5 @@ public class Course{
     public void setSubject(Subject subject) {
         this.subject = subject;
     }
+
 }

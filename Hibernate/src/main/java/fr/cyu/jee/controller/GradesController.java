@@ -19,8 +19,7 @@ public class GradesController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Grade> gradeList = getListGrades();
-        req.setAttribute("GradeList",gradeList);
+        req.getRequestDispatcher("WEB-INF/grade.jsp").forward(req, resp);
     }
 
     @Override

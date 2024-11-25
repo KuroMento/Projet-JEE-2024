@@ -15,8 +15,7 @@ import java.util.List;
 public class SubjectController extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        List<Subject> listSubjects = getListSubjects();
-        req.setAttribute("ListSubjects",listSubjects);
+        req.getRequestDispatcher("/WEB-INF/subject.jsp").forward(req,resp);
     }
 
     @Override
@@ -31,7 +30,7 @@ public class SubjectController extends HttpServlet{
     public static List<Subject> getListSubjects() {
         Session session = HibernateUtil.getSessionFactory().openSession();
         session.beginTransaction();
-        List<Subject> result = session.createQuery("from Subjects").list();
+        List<Subject> result = session.createQuery("from Subject").getResultList();
         session.close();
         return result;
     }
