@@ -1,15 +1,14 @@
 package fr.cyu.jee.controller;
 
-import fr.cyu.jee.HibernateUtil;
 import fr.cyu.jee.model.User;
+import fr.cyu.jee.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
-import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Servlet that returns the list of users.
@@ -19,6 +18,8 @@ public class UserController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ArrayList<User> userArrayList = (ArrayList<User>) userRepository.findAll();
+        req.setAttribute("subjectList",userArrayList);
         req.getRequestDispatcher("WEB-INF/user.jsp").forward(req, resp);
     }
 
@@ -27,16 +28,7 @@ public class UserController extends HttpServlet {
         doGet(req, resp);
     }
 
-    /**
-     *
-     * @return The users in the database as a list.
-     */
-    public static List<User> getListUsers() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<User> result = session.createQuery("from User").list();
-        session.close();
-        return result;
-    }
+    @Autowired
+    private UserRepository userRepository;
 
 }
