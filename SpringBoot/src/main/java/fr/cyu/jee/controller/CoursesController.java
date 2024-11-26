@@ -1,15 +1,17 @@
 package fr.cyu.jee.controller;
 
-import fr.cyu.jee.HibernateUtil;
 import fr.cyu.jee.model.*;
+import fr.cyu.jee.repository.StudentRepository;
+import fr.cyu.jee.repository.TeacherRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
 
 /**
  * This servlet send the according courses to a teacher or a student
@@ -18,6 +20,16 @@ import java.util.List;
 public class CoursesController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Object loggedUser = req.getSession().getAttribute("loggedUser");
+        User user = (User) loggedUser;
+        if(user.getPermissions() == Permissions.STUDENT) {
+            Student student = getStudent(user.getIdentification());
+            req.setAttribute("courses",student.getCourses());
+        }
+        if(user.getPermissions() == Permissions.TEACHER) {
+            Teacher teacher = getTeacher(user.getIdentification());
+            req.setAttribute("courses",teacher.getCourses());
+        }
         req.getRequestDispatcher("WEB-INF/course.jsp").forward(req, resp);
     }
 
@@ -26,40 +38,31 @@ public class CoursesController extends HttpServlet {
         doGet(req, resp);
     }
 
-    /**
-     *
-     * @return The users in the database as a list.
-     */
-    public static List<User> getListUsers() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<User> result = session.createQuery("from User").list();
-        session.close();
-        return result;
-    }
+    @Autowired
+    private StudentRepository studentRepository;
 
     /**
      *
-     * @return The students in the database as a list.
+     * @param id student's id
+     * @return the logged student
      */
-    public static List<Student> getListStudents() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Student> result = session.createQuery("from User WHERE rights = student").list();
-        session.close();
-        return result;
+    public Student getStudent(String id){
+        Optional<Student> studentById = studentRepository.findById(id);
+        Student student = studentById.get();
+        return student;
     }
+
+    @Autowired
+    private TeacherRepository teacherRepository;
 
     /**
      *
-     * @return The teachers in the database as a list.
+     * @param id teacher's id
+     * @return the logged teacher
      */
-    public static List<Teacher> getListTeachers() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Teacher> result = session.createQuery("from User WHERE rights = teacher").list();
-        session.close();
-        return result;
+    public Teacher getTeacher(String id){
+        Optional<Teacher> teacherById = teacherRepository.findById(id);
+        Teacher teacher = teacherById.get();
+        return teacher;
     }
-
 }
