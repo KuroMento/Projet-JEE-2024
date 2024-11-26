@@ -1,17 +1,17 @@
 package fr.cyu.jee.controller;
 
-import fr.cyu.jee.HibernateUtil;
 import fr.cyu.jee.model.Grade;
 import fr.cyu.jee.model.User;
+import fr.cyu.jee.repository.GradeRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Optional;
 
 /**
  * This servlet gives the grades to a user
@@ -21,6 +21,11 @@ public class GradesController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Object loggedUser = req.getSession().getAttribute("loggedUser");
+        User user = (User) loggedUser;
+        Grade grade =getGrade(user.getIdentification());
+        req.setAttribute("grade",grade.getValue());
+        req.setAttribute("gradeCoefficient",grade.getCoefficient());
         req.getRequestDispatcher("WEB-INF/grade.jsp").forward(req, resp);
     }
 
@@ -29,16 +34,18 @@ public class GradesController extends HttpServlet {
         doGet(req, resp);
     }
 
+    @Autowired
+    private GradeRepository gradeRepository;
+
     /**
      *
-     * @return The users in the database as a list.
+     * @param id user's id, linked by a foreign key to the grade's id
+     * @return the grade of the user
      */
-    public static List<Grade> getListGrades() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Grade> result = session.createQuery("from Grade").list();
-        session.close();
-        return result;
+    public Grade getGrade(String id){
+        Optional<Grade> gradeById = gradeRepository.findById(id);
+        Grade grade = gradeById.get();
+        return grade;
     }
 
 }
