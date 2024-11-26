@@ -1,25 +1,26 @@
 package fr.cyu.jee.controller;
 
-import fr.cyu.jee.HibernateUtil;
-import fr.cyu.jee.model.Permissions;
 import fr.cyu.jee.model.User;
+import fr.cyu.jee.repository.UserRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
-import java.util.Date;
-import java.util.List;
+import java.util.Optional;
 
-import org.hibernate.Session;
-import org.hibernate.query.Query;
-import org.hibernate.tool.ant.QueryExporterTask;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 
 /**
  * This servlet checks if the login information are correct.
  */
 @Controller
 public class LoginController extends HttpServlet{
+    @GetMapping("/")
+    public String home(){
+        return "index.jsp";
+    }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String id = req.getParameter("id");
@@ -33,7 +34,9 @@ public class LoginController extends HttpServlet{
             if (loggedUser == null ){
                 req.setAttribute("error", "The id or the password is incorrect");
             }
-            req.getSession().setAttribute("user", loggedUser);
+            else {
+                req.getSession().setAttribute("loggedUser", loggedUser);
+            }
         }
         req.getRequestDispatcher("/index.jsp").forward(req, resp);
     }
@@ -43,31 +46,22 @@ public class LoginController extends HttpServlet{
         doGet(req, resp);
     }
 
+    @Autowired
+    private UserRepository userRepository;
+
     /**
      *
-     * @return The users in the database as a list.
+     * @param id the user's id
+     * @param pw the user's password
+     * @return the user in the database if the logging information are correct
      */
-    public static List<User> getListUsers() {
-        // Session session = HibernateUtil.getSessionFactory().openSession();
-        // session.beginTransaction();
-        // List<User> result = session.createQuery("from User").list();
-        // session.close();
-        // return result;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM User";
-            Query<User> query = session.createQuery(hql, User.class);
-            return query.getResultList();
+    public User getUser(String id, String pw){
+        Optional<User> userById = userRepository.findById(id);
+        User user = userById.get();
+        //compare the user with the database
+        if(user.getIdentification().equals(id) && user.getCryptedPassword().equals(pw)) {
+            return user;
         }
+        return null;
     }
-
-    public static User getUser(String id, String pw){
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM User WHERE id = :id AND encryptedPassword = :pw";
-            Query<User> userQuery = session.createQuery(hql)
-                    .setParameter("id",id)
-                    .setParameter("pw",pw);
-            return userQuery.uniqueResult();
-        }
-    }
-
 }
