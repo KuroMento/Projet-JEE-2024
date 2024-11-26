@@ -1,14 +1,14 @@
 package fr.cyu.jee.controller;
 
-import fr.cyu.jee.HibernateUtil;
 import fr.cyu.jee.model.Subject;
+import fr.cyu.jee.repository.SubjectRepository;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
-import org.hibernate.Session;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Servlet that returns the list of available subjects.
@@ -17,6 +17,8 @@ import java.util.List;
 public class SubjectController extends HttpServlet{
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ArrayList<Subject> subjectArrayList = (ArrayList<Subject>) subjectRepository.findAll();
+        req.setAttribute("subjectList",subjectArrayList);
         req.getRequestDispatcher("/WEB-INF/subject.jsp").forward(req,resp);
     }
 
@@ -25,15 +27,6 @@ public class SubjectController extends HttpServlet{
         doGet(req, resp);
     }
 
-    /**
-     *
-     * @return The subjects in the database as a list.
-     */
-    public static List<Subject> getListSubjects() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Subject> result = session.createQuery("from Subject").getResultList();
-        session.close();
-        return result;
-    }
+    @Autowired
+    private SubjectRepository subjectRepository;
 }
