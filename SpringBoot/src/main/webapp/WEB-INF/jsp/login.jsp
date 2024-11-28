@@ -18,7 +18,7 @@
     <jsp:include page="../../jsp_fragments/options.jsp"/>
     <main>
         <div class="login_form">
-            <form method="post" action="/FrontController">
+            <form method="post" action="/login/enter">
                 <label name="id"> Identifiant :</label>
                 <input type="text" required name="id">
                 <br>
