@@ -9,27 +9,16 @@
 <html>
 <head>
     <head>
-        <title>CY JEE</title>
+        <title>CY Login</title>
         <link rel="stylesheet" type="text/css" href="/css/style.css">
     </head>
 <body>
     <jsp:include page="../jsp_fragments/logo.jsp"/>
     <jsp:include page="../jsp_fragments/header.jsp"/>
-    <jsp:include page="../jsp_fragments/options.jsp"/>
-    <main>
-        <div class="login_form">
-            <form method="post" action="/FrontController">
-                <label name="id"> Identifiant :</label>
-                <input type="text" required name="id">
-                <br>
-                <label name="password"> Mot de passe :</label>
-                <input type="password" required name="pw">
-                <br>
-                <input type="submit" value="Cliquez">
-            </form>
-            <p> If you want to test the site as an admin, you  </p>
-        </div>
-    </main>
+    <div class="center-content">
+        <jsp:include page="../jsp_fragments/options.jsp"/>
+        <jsp:include page="../jsp_fragments/main_fragments/login_main.jsp"/>
+    </div>
     <jsp:include page="../jsp_fragments/footer.jsp"/>
 </body>
 </html>

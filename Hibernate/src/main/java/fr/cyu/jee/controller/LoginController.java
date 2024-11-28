@@ -25,15 +25,18 @@ public class LoginController extends HttpServlet{
 
         if( id == null || pw == null ){
             req.setAttribute("error", "A parameter is missing");
+            req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
         }
         else{
             User loggedUser = getUser(id,pw);
+            req.getSession().setAttribute("loggedUser", loggedUser);
+
             if (loggedUser == null ){
                 req.setAttribute("error", "The id or the password is incorrect");
+                req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
             }
-            req.getSession().setAttribute("user", loggedUser);
+            req.getRequestDispatcher("/index.jsp").forward(req, resp);
         }
-        req.getRequestDispatcher("/index.jsp").forward(req, resp);
     }
 
     @Override
@@ -42,7 +45,6 @@ public class LoginController extends HttpServlet{
     }
 
     /**
-     *
      * @return The users in the database as a list.
      */
     public static List<User> getListUsers() {

@@ -1,5 +1,6 @@
 package fr.cyu.jee.controller;
 
+import fr.cyu.jee.model.User;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,10 +14,15 @@ public class FrontController extends HttpServlet {
         String action = req.getParameter("action");
         String categorie = req.getParameter("categorie");
 
-        String loggedUser = (String) req.getSession().getAttribute("User");
+        User loggedUser = (User) req.getSession().getAttribute("loggedUser");
 
-        if( (action != null && action.equals("login"))){
-            req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
+        if( action != null ){
+            if( action.equals("login")) {
+                req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
+            } else if (action.equals("logout")) {
+                req.getSession().setAttribute("loggedUser",null);
+                req.getRequestDispatcher("/index.jsp").forward(req, resp);
+            }
         }
 
         if(categorie != null) {

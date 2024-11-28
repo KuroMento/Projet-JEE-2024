@@ -7,11 +7,18 @@ import java.util.*;
 @Entity
 @Table(name = "Grades")
 public class Grade implements Serializable {
-    @EmbeddedId
-    private GradeId id;
-    @Column(name = "grade_value", updatable = false, nullable = false, length=50)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id",updatable = false, nullable = false, length=50)
+    private Long identification;
+
+    @Column(name = "student_id", nullable = false, length=50)
+    private String studentId;
+    @Column(name = "course_id", nullable = false, length=50)
+    private Long courseId;
+    @Column(name = "grade_value", nullable = false, length=50)
     private double value;
-    @Column(name = "grade_coefficient", updatable = false, nullable = false, length=50)
+    @Column(name = "grade_coefficient", nullable = false, length=50)
     private double coefficient;
 
     public double getValue() {
@@ -30,12 +37,22 @@ public class Grade implements Serializable {
         this.coefficient = coefficient;
     }
 
-    public Grade(GradeId id, double value, double coefficient) {
-        this.id = id;
-        this.value = value;
-        this.coefficient = coefficient;
+    public Grade(){
     }
 
-    public Grade(){
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public Long getCourse() {
+        return courseId;
+    }
+
+    public void setCourse(Long courseId) {
+        this.courseId = courseId;
     }
 }

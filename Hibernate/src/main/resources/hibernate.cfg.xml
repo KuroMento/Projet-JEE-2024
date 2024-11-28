@@ -6,9 +6,9 @@
     <session-factory>
         <!-- JDBC Database connection settings -->
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/ecole</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/TestDBJEE</property>
         <property name="hibernate.connection.username">root</property>
-        <property name="hibernate.connection.password">mdp</property>
+        <property name="hibernate.connection.password">ur mdp</property>
 
         <!-- JDBC connection pool settings -->
         <property name="hibernate.c3p0.min_size">5</property>
@@ -21,25 +21,19 @@
         <property name="hibernate.current_session_context_class">thread</property>
 
         <!-- Echo all executed SQL to stdout -->
-        <property name="hibernate.show_sql">false</property>
+        <property name="hibernate.show_sql">true</property>
         <property name="hibernate.use_sql_comments">true</property>
         <property name="hibernate.format_sql">true </property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
 
         <!-- Drop and re-create the database schema on startup -->
-        <property name="hibernate.hbm2ddl.auto">create</property>
-        <mapping resource="reveng.xml"/>
-        <mapping class="model.Cinema"/>
-        <mapping class="model.Film"/>
-        <mapping class="model.Individu"/>
-        <mapping class="model.Jouer"/>
-        <mapping class="model.Projection"/>
+        <mapping class="fr.cyu.jee.model.Subject"/>
+        <mapping class="fr.cyu.jee.model.Grade"/>
+        <mapping class="fr.cyu.jee.model.User"/>
+        <mapping class="fr.cyu.jee.model.Course"/>
 
-        <!-- Add annotated aClasses here
-        <mapping package=""resource="models/Cinema.hbm.xml" />
-        <mapping package=""resource="models/Film.hbm.xml" />
-        <mapping package=""resource="models/Jouer.hbm.xml" />
-        <mapping package=""resource="models/Individu.hbm.xml" />
-        <mapping package=""resource="models/Projection.hbm.xml" />
-        -->
+        <mapping class="fr.cyu.jee.model.Teacher"/>
+        <mapping class="fr.cyu.jee.model.Student"/>
+        <mapping class="fr.cyu.jee.model.Administrator"/>
     </session-factory>
 </hibernate-configuration>

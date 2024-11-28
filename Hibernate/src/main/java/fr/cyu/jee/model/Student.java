@@ -17,6 +17,8 @@ public class Student extends User implements Serializable {
         super(lastName, firstName, contact, identification, cryptedPassword, dateOfBirth);
     }
 
+    public Student(){ super(); }
+
     public List<Course> getCourses() {
         return courses;
     }

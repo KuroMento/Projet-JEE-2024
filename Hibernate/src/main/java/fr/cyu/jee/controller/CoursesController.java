@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 
 import java.io.IOException;
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.List;
 public class CoursesController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setAttribute("courses",getAllCourses());
         req.getRequestDispatcher("WEB-INF/course.jsp").forward(req, resp);
     }
 
@@ -29,36 +31,25 @@ public class CoursesController extends HttpServlet {
      *
      * @return The users in the database as a list.
      */
-    public static List<User> getListUsers() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<User> result = session.createQuery("from User").list();
-        session.close();
-        return result;
+    public static List<Course> getAllCourses() {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT c FROM Course c JOIN FETCH c.students";
+            Query<Course> userQuery = session.createQuery(hql);
+            return userQuery.getResultList();
+        }
     }
 
     /**
      *
-     * @return The students in the database as a list.
+     * @return The corresponding course according to the id
      */
-    public static List<Student> getListStudents() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Student> result = session.createQuery("from User WHERE rights = student").list();
-        session.close();
-        return result;
-    }
-
-    /**
-     *
-     * @return The teachers in the database as a list.
-     */
-    public static List<Teacher> getListTeachers() {
-        Session session = HibernateUtil.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Teacher> result = session.createQuery("from User WHERE rights = teacher").list();
-        session.close();
-        return result;
+    public static Course getCourseById(String id){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "FROM Course WHERE id = :id";
+            Query<Course> userQuery = session.createQuery(hql)
+                    .setParameter("id",id);
+            return userQuery.uniqueResult();
+        }
     }
 
 }

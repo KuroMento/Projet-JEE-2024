@@ -20,7 +20,7 @@ public class Subject implements Serializable {
     /**
      * A short description of the class content
      */
-    @Column(name = "descr", updatable = false, nullable = false, length=50)
+    @Column(name = "descr", nullable = false, length=50)
     private String description;
     /**
      * A number to identify each class
