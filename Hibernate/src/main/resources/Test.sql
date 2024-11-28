@@ -25,9 +25,14 @@ INSERT INTO Grades (id,student_id,course_id,grade_value,grade_coefficient) VALUE
 INSERT INTO Grades (id,student_id,course_id,grade_value,grade_coefficient) VALUES (6,'Student',3,13,2);
 
 INSERT INTO Courses (id,subject_id,teacher_id) VALUES (1, 1, 'SLaruto');
-INSERT INTO Courses (id,subject_id,teacher_id) VALUES (2, 1, 'SLaruto');
+INSERT INTO Courses (id,subject_id,teacher_id) VALUES (2, 3, 'SLaruto');
 INSERT INTO Courses (id,subject_id,teacher_id) VALUES (3, 2, 'SLaruto');
+INSERT INTO Courses (id,subject_id,teacher_id) VALUES (4, 1, 'Teacher');
+INSERT INTO Courses (id,subject_id,teacher_id) VALUES (5, 2, 'Teacher');
 
 INSERT INTO Student_Courses (student_id,course_id) VALUES ('FGeorge', 1);
 INSERT INTO Student_Courses (student_id,course_id) VALUES ('PEmma', 2);
 INSERT INTO Student_Courses (student_id,course_id) VALUES ('PEmma', 3);
+INSERT INTO Student_Courses (student_id,course_id) VALUES ('Student', 1);
+INSERT INTO Student_Courses (student_id,course_id) VALUES ('Student', 2);
+INSERT INTO Student_Courses (student_id,course_id) VALUES ('Student', 3);

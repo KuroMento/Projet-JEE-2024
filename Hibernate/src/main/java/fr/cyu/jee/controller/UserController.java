@@ -1,10 +1,7 @@
 package fr.cyu.jee.controller;
 
 import fr.cyu.jee.HibernateUtil;
-import fr.cyu.jee.model.Course;
-import fr.cyu.jee.model.Permissions;
-import fr.cyu.jee.model.Subject;
-import fr.cyu.jee.model.User;
+import fr.cyu.jee.model.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import org.hibernate.Session;
@@ -12,6 +9,8 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,24 +27,68 @@ public class UserController extends HttpServlet {
         User loggedUser = (User) req.getSession().getAttribute("loggedUser");
 
         if(loggedUser != null && loggedUser.getPermissions() == Permissions.ADMIN){
-            req.setAttribute("users",getListUsers());
             if(action != null && !action.isBlank() && !action.isEmpty()){
+                User newUser = new User();
                 String id = req.getParameter("id");
                 String firstName = req.getParameter("firstName");
                 String lastName = req.getParameter("lastName");
                 String pw = req.getParameter("pw");
-                Date dateOfBirth = new Date(req.getParameter("dateOfBirth"));
-                List<Course> courses = new ArrayList<>();
-                //Permissions permissions = Permissions(req.getParameter("permissions"));
-
-                String[] courseIds = req.getParameterValues("course_ids");
-                for(String cid : courseIds){
-                    courses.add(CoursesController.getCourseById(cid));
+                String contact = req.getParameter("contact");
+                SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
+                Date dateOfBirth = null;
+                try {
+                    dateOfBirth = sdf.parse(req.getParameter("dateOfBirth"));
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
                 }
+
+                Permissions permissions = null;
+                switch (req.getParameter("permissions")){
+                    case "ADMIN":
+                        permissions = Permissions.ADMIN;
+                        break;
+                    case "TEACHER":
+                        permissions = Permissions.TEACHER;
+                        break;
+                    default:
+                        permissions = Permissions.STUDENT;
+                        break;
+                }
+
+                newUser.setIdentification(id);
+                newUser.setFirstName(firstName);
+                newUser.setLastName(lastName);
+                newUser.setContact(contact);
+                newUser.setCryptedPassword(pw);
+                newUser.setDateOfBirth(dateOfBirth);
+                newUser.setPermissions(permissions);
 
                 if( action.equals("create") ){
-                    createUser(new User());
+                    createUser(newUser);
                 }
+                if( action.equals("update") ){
+                    updateUser(newUser);
+                }
+                if( action.equals("delete") ){
+                    deleteUser(newUser);
+                }
+            }
+            if( option != null && !option.isEmpty() && !option.isBlank()){
+                if(option.equals("create")){
+                    User selectedUser = new User();
+                    req.setAttribute("selectedUser",selectedUser);
+                }
+                if( option.equals("update")){
+                    User selectedUser = getUserById(req.getParameter("id"));
+                    req.setAttribute("selectedUser",selectedUser);
+                }
+                if( option.equals("delete")){
+                    User selectedUser = getUserById(req.getParameter("id"));
+                    req.setAttribute("selectedUser",selectedUser);
+                }
+            }
+            else{
+                req.setAttribute("users",getListUsers());
             }
         }
         req.getRequestDispatcher("WEB-INF/user.jsp").forward(req, resp);
@@ -129,6 +172,24 @@ public class UserController extends HttpServlet {
         }
         finally {
             if( session != null){ session.close();}
+        }
+    }
+
+    public static Student getStudent(User student){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT DISTINCT s FROM Student s JOIN FETCH s.courses WHERE s.id = :id";
+            Query<Student> userQuery = session.createQuery(hql)
+                    .setParameter("id",student.getIdentification());
+            return userQuery.uniqueResult();
+        }
+    }
+
+    public static Teacher getTeacher(User teacher){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT DISTINCT t FROM Teacher t JOIN FETCH t.courses WHERE t.id = :id";
+            Query<Teacher> userQuery = session.createQuery(hql)
+                    .setParameter("id",teacher.getIdentification());
+            return userQuery.uniqueResult();
         }
     }
 

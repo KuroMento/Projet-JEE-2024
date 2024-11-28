@@ -15,10 +15,10 @@
 <body>
     <jsp:include page="jsp_fragments/logo.jsp"/>
     <jsp:include page="jsp_fragments/header.jsp"/>
-    <div class="center-content">
+    <form method="get" class="center-content" action="/FrontController">
         <jsp:include page="jsp_fragments/options.jsp"/>
         <jsp:include page="jsp_fragments/main_fragments/index_main.jsp"/>
-    </div>
+    </form>
     <jsp:include page="jsp_fragments/footer.jsp"/>
 </body>
 </html>

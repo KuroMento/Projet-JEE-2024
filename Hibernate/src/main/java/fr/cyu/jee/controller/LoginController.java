@@ -1,8 +1,7 @@
 package fr.cyu.jee.controller;
 
 import fr.cyu.jee.HibernateUtil;
-import fr.cyu.jee.model.Permissions;
-import fr.cyu.jee.model.User;
+import fr.cyu.jee.model.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 
@@ -29,12 +28,23 @@ public class LoginController extends HttpServlet{
         }
         else{
             User loggedUser = getUser(id,pw);
-            req.getSession().setAttribute("loggedUser", loggedUser);
-
             if (loggedUser == null ){
                 req.setAttribute("error", "The id or the password is incorrect");
                 req.getRequestDispatcher("/WEB-INF/login.jsp").forward(req, resp);
             }
+
+            if( loggedUser.getPermissions() == Permissions.STUDENT ){
+                Student student = UserController.getStudent(loggedUser);
+                req.getSession().setAttribute("loggedUser",student);
+            }
+            if( loggedUser.getPermissions() == Permissions.TEACHER ){
+                Teacher teacher = UserController.getTeacher(loggedUser);
+                req.getSession().setAttribute("loggedUser",teacher);
+            }
+            if( loggedUser.getPermissions() == Permissions.ADMIN ){
+                req.getSession().setAttribute("loggedUser",loggedUser);
+            }
+
             req.getRequestDispatcher("/index.jsp").forward(req, resp);
         }
     }
@@ -42,22 +52,6 @@ public class LoginController extends HttpServlet{
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
-    }
-
-    /**
-     * @return The users in the database as a list.
-     */
-    public static List<User> getListUsers() {
-        // Session session = HibernateUtil.getSessionFactory().openSession();
-        // session.beginTransaction();
-        // List<User> result = session.createQuery("from User").list();
-        // session.close();
-        // return result;
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM User";
-            Query<User> query = session.createQuery(hql, User.class);
-            return query.getResultList();
-        }
     }
 
     public static User getUser(String id, String pw){
