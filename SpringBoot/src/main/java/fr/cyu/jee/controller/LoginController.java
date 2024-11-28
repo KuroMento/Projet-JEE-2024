@@ -10,44 +10,38 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-/**
- * This servlet checks if the login information are correct.
- */
 @Controller
 public class LoginController extends HttpServlet{
-    @GetMapping("/")
-    public String home(){
-        return "/WEB-INF/jsp/index.jsp";
-    }
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String id = req.getParameter("id");
-        String pw = req.getParameter("pw");
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @GetMapping("/login")
+    public String loginPage(){
+        return "login";
+    }
+
+    @PostMapping("/login/enter")
+    public String loginResponse(@RequestParam(name = "id") String id, @RequestParam(name = "pw") String pw, Model model){
         if( id == null || pw == null ){
-            req.setAttribute("error", "A parameter is missing");
+            model.addAttribute("error", "A parameter is missing");
         }
         else{
             User loggedUser = getUser(id,pw);
             if (loggedUser == null ){
-                req.setAttribute("error", "The id or the password is incorrect");
+                model.addAttribute("error", "The id or the password is incorrect");
             }
             else {
-                req.getSession().setAttribute("loggedUser", loggedUser);
+                model.addAttribute("loggedUser", loggedUser);
             }
         }
-        req.getRequestDispatcher("/index.jsp").forward(req, resp);
+        return "redirect:/index";
     }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
-    }
-
-    @Autowired
-    private UserRepository userRepository;
 
     /**
      *
