@@ -12,15 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
+/**
+ * This servlet checks if the login information are correct.
+ */
 @Controller
 public class LoginController extends HttpServlet{
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @GetMapping("/login")
-    public String loginPage(){
-        return "login";
+    @GetMapping("/")
+    public String home(){
+        return "/WEB-INF/jsp/index.jsp";
     }
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -46,6 +45,9 @@ public class LoginController extends HttpServlet{
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
     }
+
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      *
