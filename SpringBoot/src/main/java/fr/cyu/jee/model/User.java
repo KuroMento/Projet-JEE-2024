@@ -2,7 +2,6 @@ package fr.cyu.jee.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.security.Permissions;
 import java.util.*;
 
 /**
