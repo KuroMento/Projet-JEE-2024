@@ -48,10 +48,11 @@ public class User implements Serializable {
     /**
      * The permissions of the user
      */
+    @Enumerated(value = EnumType.STRING)
     @Column(name = "rights", nullable = false, length=50)
-    private String permissions;
+    private Permissions permissions;
 
-    public User(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth, String permission) {
+    public User(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth, Permissions permission) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.contact = contact;
@@ -63,7 +64,6 @@ public class User implements Serializable {
 
     public User() {
     }
-
 
     /**
      * @return the last name of the user
@@ -152,14 +152,14 @@ public class User implements Serializable {
     /**
      * @return the list of permissions defining a user
      */
-    public String getPermissions() {
+    public Permissions getPermissions() {
         return permissions;
     }
 
     /**
      * @param permissions the new list of permissions defining a user
      */
-    public void setPermissions(String permissions) {
+    public void setPermissions(Permissions permissions) {
         this.permissions = permissions;
     }
 }
