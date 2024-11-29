@@ -35,7 +35,7 @@ public class User implements Serializable {
     @Column(name = "id", unique = true, updatable = false,  nullable = false, length=50)
     private String identification;
     /**
-     * The encrypted password
+     * The crypted password
      */
     @Column(name = "encryptedPassword", nullable = false, length=50)
     private String cryptedPassword;
@@ -48,21 +48,22 @@ public class User implements Serializable {
     /**
      * The permissions of the user
      */
-    @Enumerated(value = EnumType.STRING)
     @Column(name = "rights", nullable = false, length=50)
-    private Permissions permissions;
+    private String permissions;
 
-    public User(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth) {
+    public User(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth, String permission) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.contact = contact;
         this.identification = identification;
         this.cryptedPassword = cryptedPassword;
         this.dateOfBirth = dateOfBirth;
+        this.permissions = permission;
     }
 
     public User() {
     }
+
 
     /**
      * @return the last name of the user
@@ -151,14 +152,14 @@ public class User implements Serializable {
     /**
      * @return the list of permissions defining a user
      */
-    public Permissions getPermissions() {
+    public String getPermissions() {
         return permissions;
     }
 
     /**
      * @param permissions the new list of permissions defining a user
      */
-    public void setPermissions(Permissions permissions) {
+    public void setPermissions(String permissions) {
         this.permissions = permissions;
     }
 }

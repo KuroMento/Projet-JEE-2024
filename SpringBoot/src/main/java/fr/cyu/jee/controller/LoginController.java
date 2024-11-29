@@ -2,12 +2,7 @@ package fr.cyu.jee.controller;
 
 import fr.cyu.jee.model.User;
 import fr.cyu.jee.repository.UserRepository;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
-
-import java.io.IOException;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,14 +25,22 @@ public class LoginController extends HttpServlet{
     public String loginResponse(@RequestParam(name = "id") String id, @RequestParam(name = "pw") String pw, Model model){
         if( id == null || pw == null ){
             model.addAttribute("error", "A parameter is missing");
+            System.out.println("A parameter is missing");
         }
         else{
             User loggedUser = getUser(id,pw);
             if (loggedUser == null ){
                 model.addAttribute("error", "The id or the password is incorrect");
+                System.out.println("Incorrect");
             }
             else {
-                model.addAttribute("loggedUser", loggedUser);
+                if(loggedUser.getCryptedPassword().equals(pw) && loggedUser.getIdentification().equals(id)){
+                    model.addAttribute("loggedUser", loggedUser);
+                    System.out.println("Welcome"+loggedUser.getIdentification());
+                }
+                else{
+                    System.out.println("Unknown Error");
+                }
             }
         }
         return "redirect:/index";
@@ -50,9 +53,8 @@ public class LoginController extends HttpServlet{
      * @return the user in the database if the logging information are correct
      */
     public User getUser(String id, String pw){
-        Optional<User> userById = userRepository.findById(id);
-        User user = userById.get();
-        //compare the user with the database
+        User user = new User();
+        user = userRepository.findUserByIdentification(id);
         if(user.getIdentification().equals(id) && user.getCryptedPassword().equals(pw)) {
             return user;
         }
