@@ -3,6 +3,7 @@ package fr.cyu.jee.model;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The class that represents different subjects and their labels
@@ -11,6 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "Subjects")
 public class Subject implements Serializable {
+
     /**
      * The name of the class
      */
@@ -37,18 +39,9 @@ public class Subject implements Serializable {
     private double coefficient;
 
     @OneToMany(mappedBy = "subject",cascade = CascadeType.ALL)
-    private List<Course> courses;
+    private Set<Course> courses;
 
-    public Subject(String label, String description, Long identification, double coefficient, List<Course> courses){
-        this.label = label;
-        this.description = description;
-        this.identification = identification;
-        this.coefficient = coefficient;
-        this.courses = courses;
-    }
-
-    public Subject(){
-    }
+    public Subject(){}
 
     /**
      *
@@ -117,14 +110,14 @@ public class Subject implements Serializable {
     /**
      * @return subject's available courses.
      */
-    public List<Course> getCourses() {
+    public Set<Course> getCourses() {
         return courses;
     }
 
     /**
      * @param courses subject's available courses.
      */
-    public void setCourses(List<Course> courses) {
+    public void setCourses(Set<Course> courses) {
         this.courses = courses;
     }
 }

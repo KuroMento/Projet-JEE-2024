@@ -7,7 +7,7 @@
     List<Course> courses = (List<Course>) request.getAttribute("courses");
 
     if( courses == null ){
-        mainDiv = mainDiv + "No subjects currently !";
+        mainDiv = mainDiv + "No courses currently !";
     }
     else{
         for(Course c : courses){

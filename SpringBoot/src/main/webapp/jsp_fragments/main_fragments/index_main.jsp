@@ -1,5 +1,6 @@
 <%@ page import="fr.cyu.jee.model.*" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Set" %>
 <%
   String mainDiv = "<main class=\"main\">";
   User currentUser = (User) session.getAttribute("loggedUser");
@@ -16,7 +17,7 @@
                 + " Contact / Email : " + currentUser.getContact() + "<br>"
                 + " Date of birth : " + currentUser.getDateOfBirth() + "<br></p>";
     if( currentUser.getPermissions() == Permissions.STUDENT){
-        List<Course> courses = ((Student)currentUser).getCourses();
+        Set<Course> courses = ((Student)currentUser).getCourses();
         if( courses == null || courses.isEmpty()){
           mainDiv = mainDiv + "<br><p>You currently have no courses registered to your profile</p>";
         }
@@ -31,7 +32,7 @@
         }
     }
       if( currentUser.getPermissions() == Permissions.TEACHER){
-          List<Course> courses = ((Teacher)currentUser).getCourses();
+          List<Course> courses = (List<Course>) request.getAttribute("courses");
           if( courses == null || courses.isEmpty()){
               mainDiv = mainDiv + "<br><p>You currently have no courses registered to your profile</p>";
           }

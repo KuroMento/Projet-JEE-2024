@@ -28,12 +28,11 @@ public class LoginController extends HttpServlet{
 
     @PostMapping("/login/enter")
     public String loginResponse(@RequestParam(name = "id") String id, @RequestParam(name = "pw") String pw,  HttpSession session){
-        System.out.println("Check de passage");
         if( id == null || pw == null ){
-            System.out.println("A parameter is missing");
+            //System.out.println("A parameter is missing");
         }
         else{
-            System.out.println("Get User : ");
+            //System.out.println("Get User : ");
             User loggedUser = getUser(id,pw);
             if (loggedUser == null ){
                 System.out.println("Incorrect");
