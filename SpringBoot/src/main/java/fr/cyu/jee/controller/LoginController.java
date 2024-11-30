@@ -55,7 +55,7 @@ public class LoginController extends HttpServlet{
      */
     public User getUser(String id, String pw){
         User user = userRepository.findUserByIdentification(id);
-        if(user.getIdentification().equals(id) && user.getCryptedPassword().equals(pw)) {
+        if(user != null && user.getIdentification().equals(id) && user.getCryptedPassword().equals(pw)) {
             return user;
         }
         return null;
