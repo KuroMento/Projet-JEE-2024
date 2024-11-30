@@ -7,19 +7,28 @@ import java.util.*;
 @Entity
 @Table(name = "Grades")
 public class Grade implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id",updatable = false, nullable = false, length=50)
     private Long identification;
 
-    @Column(name = "student_id", nullable = false, length=50)
-    private String studentId;
-    @Column(name = "course_id", nullable = false, length=50)
-    private Long courseId;
-    @Column(name = "grade_value", nullable = false, length=50)
+    @ManyToOne
+    @JoinColumn(name = "student_id", nullable = false)
+    private Student student;
+    @ManyToOne
+    @JoinColumn(name = "course_id", nullable = false)
+    private Course course;
+    @Column(name = "value", nullable = false, length=50)
     private double value;
-    @Column(name = "grade_coefficient", nullable = false, length=50)
+
+    @Column(name = "label", nullable = false, length=50)
+    private String label;
+
+    @Column(name = "coefficient", nullable = false, length=50)
     private double coefficient;
+
+    public Grade(){ }
 
     public double getValue() {
         return value;
@@ -37,22 +46,36 @@ public class Grade implements Serializable {
         this.coefficient = coefficient;
     }
 
-    public Grade(){
+
+    public Student getStudent() {
+        return student;
     }
 
-    public String getStudentId() {
-        return studentId;
+    public void setStudent(Student student) {
+        this.student = student;
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public Course getCourse() {
+        return course;
     }
 
-    public Long getCourse() {
-        return courseId;
+    public void setCourse(Course course) {
+        this.course = course;
     }
 
-    public void setCourse(Long courseId) {
-        this.courseId = courseId;
+    public Long getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(Long identification) {
+        this.identification = identification;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

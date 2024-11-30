@@ -11,6 +11,7 @@ import java.util.*;
 @Table(name = "Users")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class User implements Serializable {
+
     /**
      * The last name of the user
      */
@@ -50,15 +51,6 @@ public class User implements Serializable {
     @Enumerated(value = EnumType.STRING)
     @Column(name = "rights", nullable = false, length=50)
     private Permissions permissions;
-
-    public User(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth) {
-        this.lastName = lastName;
-        this.firstName = firstName;
-        this.contact = contact;
-        this.identification = identification;
-        this.cryptedPassword = cryptedPassword;
-        this.dateOfBirth = dateOfBirth;
-    }
 
     public User() {
     }

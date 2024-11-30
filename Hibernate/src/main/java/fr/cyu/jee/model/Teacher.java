@@ -8,17 +8,15 @@ import java.util.*;
 public class Teacher extends User implements Serializable {
 
     @OneToMany(mappedBy = "teacher", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Course> courses;
-    public Teacher(String lastName, String firstName, String contact, String identification, String cryptedPassword, Date dateOfBirth) {
-        super(lastName, firstName, contact, identification, cryptedPassword, dateOfBirth);
-    }
+    private Set<Course> courses;
+
     public Teacher(){ super(); }
     
-    public List<Course> getCourses() {
+    public Set<Course> getCourses() {
         return courses;
     }
 
-    public void setCourses(List<Course> courses) {
+    public void setCourses(Set<Course> courses) {
         this.courses = courses;
     }
 }

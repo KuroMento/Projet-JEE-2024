@@ -7,12 +7,13 @@ import java.util.*;
 @Entity
 @Table(name = "Courses")
 public class Course implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, updatable = false, nullable = false, length=50)
     private Long identification;
     @ManyToMany(mappedBy = "courses")
-    private List<Student> students;
+    private Set<Student> students;
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
@@ -21,12 +22,8 @@ public class Course implements Serializable {
     @JoinColumn(name = "subject_id", nullable = false)
     private Subject subject;
 
-    public Course(Long identification, List<Student> students, Teacher teacher, Subject subject) {
-        this.identification = identification;
-        this.students = students;
-        this.teacher = teacher;
-        this.subject = subject;
-    }
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Grade> grades;
 
     public Course(){}
 
@@ -38,11 +35,11 @@ public class Course implements Serializable {
         this.identification = identification;
     }
 
-    public List<Student> getStudents() {
+    public Set<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(List<Student> students) {
+    public void setStudents(Set<Student> students) {
         this.students = students;
     }
 
@@ -62,4 +59,11 @@ public class Course implements Serializable {
         this.subject = subject;
     }
 
+    public Set<Grade> getGrades() {
+        return grades;
+    }
+
+    public void setGrades(Set<Grade> grades) {
+        this.grades = grades;
+    }
 }
