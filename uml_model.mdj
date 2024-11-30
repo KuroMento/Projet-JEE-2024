@@ -1493,7 +1493,7 @@
 											"top": 534,
 											"width": 166,
 											"height": 13,
-											"text": "-identification: int",
+											"text": "-identification: Long",
 											"horizontalAlignment": 0
 										}
 									],
@@ -1722,7 +1722,7 @@
 											"top": 564,
 											"width": 162.728515625,
 											"height": 13,
-											"text": "-identification: int",
+											"text": "-identification: Long",
 											"horizontalAlignment": 0
 										},
 										{
@@ -2782,13 +2782,30 @@
 											"height": 13,
 											"text": "-label: String",
 											"horizontalAlignment": 0
+										},
+										{
+											"_type": "UMLAttributeView",
+											"_id": "AAAAAAGTfehTzK2P/+4=",
+											"_parent": {
+												"$ref": "AAAAAAGS9qTVNftG2ZI="
+											},
+											"model": {
+												"$ref": "AAAAAAGTfehTdq2DMAw="
+											},
+											"font": "Arial;13;0",
+											"left": 237,
+											"top": 579,
+											"width": 159,
+											"height": 13,
+											"text": "+identification: Long",
+											"horizontalAlignment": 0
 										}
 									],
 									"font": "Arial;13;0",
 									"left": 232,
 									"top": 529,
 									"width": 169,
-									"height": 53
+									"height": 68
 								},
 								{
 									"_type": "UMLOperationCompartmentView",
@@ -2801,7 +2818,7 @@
 									},
 									"font": "Arial;13;0",
 									"left": 232,
-									"top": 582,
+									"top": 597,
 									"width": 169,
 									"height": 10
 								},
@@ -4020,7 +4037,7 @@
 							},
 							"name": "identification",
 							"visibility": "private",
-							"type": "int"
+							"type": "Long"
 						}
 					]
 				},
@@ -4060,7 +4077,7 @@
 							},
 							"name": "identification",
 							"visibility": "private",
-							"type": "int"
+							"type": "Long"
 						},
 						{
 							"_type": "UMLAttribute",
@@ -4171,6 +4188,15 @@
 							"name": "label",
 							"visibility": "private",
 							"type": "String"
+						},
+						{
+							"_type": "UMLAttribute",
+							"_id": "AAAAAAGTfehTdq2DMAw=",
+							"_parent": {
+								"$ref": "AAAAAAGS9qTVNPs+OX0="
+							},
+							"name": "identification",
+							"type": "Long"
 						}
 					]
 				}
