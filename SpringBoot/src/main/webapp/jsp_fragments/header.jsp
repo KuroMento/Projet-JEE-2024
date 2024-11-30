@@ -1,13 +1,12 @@
-<header>
+<%@ page import="fr.cyu.jee.model.User" %>
+<header class="header">
     <div class="categories">
         <ul>
-            <a href="${pageContext.request.contextPath}/subject"><li> Subjects </li></a>
-            <a href="${pageContext.request.contextPath}/course"><li> Courses </li></a>
-            <a href="${pageContext.request.contextPath}/user"><li> Users </li></a>
-            <a href="${pageContext.request.contextPath}/grade"><li> Grades </li></a>
+            <a href="/subject"><li> Subjects </li></a>
+            <a href="/course"><li> Courses </li></a>
+            <a href="/grade"><li> Grades </li></a>
+            <a href="/user"><li> Users </li></a>
         </ul>
     </div>
-    <div class="login">
-        <a href="${pageContext.request.contextPath}/login"><button> Login </button></a>
-    </div>
+    <jsp:include page="login_fragment.jsp"/>
 </header>

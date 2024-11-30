@@ -1,4 +1,5 @@
-<%--
+<%@ page import="fr.cyu.jee.model.User" %>
+<%@ page import="fr.cyu.jee.model.Permissions" %><%--
   Created by IntelliJ IDEA.
   User: cytech
   Date: 10/11/2024
@@ -8,22 +9,16 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>CY JEE</title>
+    <title>CY Board</title>
     <link rel="stylesheet" type="text/css" href="/css/style.css?v=1.0">
 </head>
 <body>
     <jsp:include page="../../jsp_fragments/logo.jsp"/>
     <jsp:include page="../../jsp_fragments/header.jsp"/>
-    <jsp:include page="../../jsp_fragments/options.jsp"/>
-    <%
-            String categorie = request.getParameter("categorie");
-            if (categorie != null) {
-                response.getWriter().print("<main>" + categorie + "</main>");
-            }
-            else{
-                response.getWriter().print("<main> Main </main>");
-            }
-    %>
+    <form method="get" class="center-content" action="/FrontController">
+        <jsp:include page="../../jsp_fragments/options.jsp"/>
+        <jsp:include page="../../jsp_fragments/main_fragments/index_main.jsp"/>
+    </form>
     <jsp:include page="../../jsp_fragments/footer.jsp"/>
 </body>
 </html>

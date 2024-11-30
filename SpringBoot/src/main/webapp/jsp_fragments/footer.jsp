@@ -1,4 +1,4 @@
-<footer>
+<footer class="footer">
   Contributors :
   <ul>
     <li> Kekt </li>
