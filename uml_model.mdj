@@ -169,7 +169,7 @@
 											"top": 164,
 											"width": 231,
 											"height": 13,
-											"text": "-contact: Mail",
+											"text": "-contact: String",
 											"horizontalAlignment": 0
 										},
 										{
@@ -3759,7 +3759,7 @@
 							},
 							"name": "contact",
 							"visibility": "private",
-							"type": "Mail"
+							"type": "String"
 						},
 						{
 							"_type": "UMLAttribute",
