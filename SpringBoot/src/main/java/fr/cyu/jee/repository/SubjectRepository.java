@@ -9,4 +9,6 @@ import java.util.List;
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, Long> {
     List<Subject> findAll();
+    void deleteSubjectByIdentification(Long id);
+    Subject findSubjectByIdentification(Long identification);
 }

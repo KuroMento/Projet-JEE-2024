@@ -7,6 +7,7 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String>{
-    User findUserByIdentification(String identifiant);
+    User findUserByIdentification(String identification);
+    void deleteUserByIdentification(String identification);
     List<User> findAll();
 }

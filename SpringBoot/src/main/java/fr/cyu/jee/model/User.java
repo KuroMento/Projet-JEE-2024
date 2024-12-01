@@ -31,7 +31,6 @@ public class User implements Serializable {
      * The unique identifier
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", unique = true, updatable = false,  nullable = false, length=50)
     private String identification;
     /**

@@ -2,6 +2,7 @@ package fr.cyu.jee.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -42,6 +43,12 @@ public class Subject implements Serializable {
     private Set<Course> courses;
 
     public Subject(){}
+
+    public Subject(String label, String description, double coefficient) {
+        this.label = label;
+        this.description = description;
+        this.coefficient = coefficient;
+    }
 
     /**
      *

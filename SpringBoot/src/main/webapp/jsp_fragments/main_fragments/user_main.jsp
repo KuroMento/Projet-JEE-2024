@@ -16,7 +16,6 @@
             String option = request.getParameter("option");
             if( option.equals("create")){
                 mainDiv = mainDiv +  "<input type=\"hidden\" name=\"action\" value=\"create\">"
-                        + "<input type=\"hidden\" name=\"id\" value=\"" + selectedUser.getIdentification() + "\">"
                         + "<div class=\"form_input\">\n" +
                         "     <label for=\"id\">User Identification | Username </label>\n" +
                         "     <input type=\"text\" id=\"id\" name=\"id\" placeholder=\"Ketk\" required>\n" +

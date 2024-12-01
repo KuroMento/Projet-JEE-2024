@@ -5,6 +5,7 @@ import fr.cyu.jee.repository.UserRepository;
 import jakarta.servlet.http.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,15 +28,16 @@ public class LoginController extends HttpServlet{
     }
 
     @PostMapping("/login/enter")
-    public String loginResponse(@RequestParam(name = "id") String id, @RequestParam(name = "pw") String pw,  HttpSession session){
+    public String loginResponse(@RequestParam(name = "id") String id, @RequestParam(name = "pw") String pw,  HttpSession session, Model model){
         if( id == null || pw == null ){
-            //System.out.println("A parameter is missing");
+            model.addAttribute("error", "A parameter is missing");
+            return "/login";
         }
         else{
-            //System.out.println("Get User : ");
             User loggedUser = getUser(id,pw);
             if (loggedUser == null ){
-                System.out.println("Incorrect");
+                model.addAttribute("error", "The username or password is incorrect");
+                return "/login";
             }
             else {
                 if(loggedUser.getCryptedPassword().equals(pw) && loggedUser.getIdentification().equals(id)){
