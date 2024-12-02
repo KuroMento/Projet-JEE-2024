@@ -56,13 +56,13 @@ public class UserController {
                             break;
                         case "delete":
                             if (!id.equals("")) {
-                                ModelValidator.validateDouble(id);
+                                ModelValidator.validateParameter(id);
                                 deleteUser(id);
                             }
                             break;
                         case "update":
                             if (!id.equals("")) {
-                                ModelValidator.validateDouble(id);
+                                ModelValidator.validateParameter(id);
                                 model.addAttribute("option", "update");
                                 model.addAttribute("selectedSubject", userRepository.findUserByIdentification(id));
                             }
