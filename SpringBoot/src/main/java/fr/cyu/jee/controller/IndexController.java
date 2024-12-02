@@ -1,5 +1,6 @@
 package fr.cyu.jee.controller;
 
+import fr.cyu.jee.ModelValidator;
 import fr.cyu.jee.model.User;
 import fr.cyu.jee.repository.CourseRepository;
 import jakarta.servlet.http.HttpServlet;
@@ -16,9 +17,17 @@ public class IndexController extends HttpServlet {
     @GetMapping("/")
     public String defaultPage(HttpSession session, Model model){
         User loggedUser = (User) session.getAttribute("loggedUser");
-        if(loggedUser != null){
-            model.addAttribute("courses", courseRepository.findAllByTeacher_Identification(loggedUser.getIdentification()));
+        try {
+            if (loggedUser != null) {
+                ModelValidator.validateParameter(loggedUser.getIdentification());
+                model.addAttribute("courses", courseRepository.findAllByTeacher_Identification(loggedUser.getIdentification()));
+            }
+            return "course";
         }
-        return "course";
+        catch (Exception e){
+            System.out.println(e);
+            model.addAttribute("error",e.getMessage());
+        }
+        return null;
     }
 }
