@@ -1,9 +1,9 @@
 package fr.cyu.jee.controller;
 
-import fr.cyu.jee.model.Course;
-import fr.cyu.jee.model.Permissions;
-import fr.cyu.jee.model.User;
+import fr.cyu.jee.ModelValidator;
+import fr.cyu.jee.model.*;
 import fr.cyu.jee.repository.CourseRepository;
+import fr.cyu.jee.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,31 +22,40 @@ public class CourseController{
         if(session.getAttribute("loggedUser") != null){
             //If an option was selected in the CRUD settings
             System.out.println("LOGGED");
-            if(((User)session.getAttribute("loggedUser")).getPermissions() == Permissions.ADMIN && !option.equals("")){
-                System.out.println("OPTION");
-                switch(option){
-                    case "create":
-                        System.out.println("CREATE");
-                        model.addAttribute("option", "create");
-                        model.addAttribute("selectedCourse", new Course());
-                        break;
-                    case "delete":
-                        if(!id.equals("")) {
-                            deleteCourse(Long.parseLong(id));
-                        }
-                        break;
-                    case "update":
-                        if(!id.equals("")) {
-                            model.addAttribute("option", "update");
-                            model.addAttribute("selectedSubject", courseRepository.findCourseByIdentification(Long.parseLong(id)));
-                        }
-                        break;
+            try {
+                if (((User) session.getAttribute("loggedUser")).getPermissions() == Permissions.ADMIN && !option.equals("")) {
+                    System.out.println("OPTION");
+                    switch (option) {
+                        case "create":
+                            model.addAttribute("option", "create");
+                            model.addAttribute("selectedCourse", new Course());
+                            break;
+                        case "delete":
+                            if (!id.equals("")) {
+                                ModelValidator.validateDouble(id);
+                                deleteCourse(Long.parseLong(id));
+                            }
+                            break;
+                        case "update":
+                            if (!id.equals("")) {
+                                ModelValidator.validateDouble(id);
+                                model.addAttribute("option", "update");
+                                model.addAttribute("selectedSubject", courseRepository.findCourseByIdentification(Long.parseLong(id)));
+                            }
+                            break;
+                    }
                 }
+                return "course";
+            }
+            catch (Exception e){
+                System.out.println(e);
+                model.addAttribute("error",e.getMessage());
             }
             model.addAttribute("courses", courseRepository.findAll());
         }
-        return "course";
+        return null;
     }
+
     /**
      * Delete the course with id as primary key
      * @param id Long identifiant of course
