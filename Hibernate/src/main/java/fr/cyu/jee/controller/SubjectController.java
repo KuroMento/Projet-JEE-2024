@@ -2,6 +2,7 @@ package fr.cyu.jee.controller;
 
 import fr.cyu.jee.HibernateUtil;
 import fr.cyu.jee.ModelValidator;
+import fr.cyu.jee.model.Course;
 import fr.cyu.jee.model.Subject;
 import fr.cyu.jee.model.User;
 import jakarta.servlet.ServletException;
@@ -48,23 +49,27 @@ public class SubjectController extends HttpServlet{
                 if (option.equals("create")) {
                     Subject selectedSubject = new Subject();
                     req.setAttribute("selectedSubject", selectedSubject);
+                    req.getRequestDispatcher("/WEB-INF/subject.jsp").forward(req, resp);
                 }
                 if (option.equals("update") && req.getParameter("subject") != null) {
                     Long subjectId = Long.valueOf(req.getParameter("subject"));
                     Subject selectedSubject = getSubjectById(subjectId);
                     req.setAttribute("selectedSubject", selectedSubject);
+                    req.getRequestDispatcher("/WEB-INF/subject.jsp").forward(req, resp);
                 }
                 if (option.equals("delete") && req.getParameter("subject") != null) {
                     Long subjectId = Long.valueOf(req.getParameter("subject"));
                     Subject selectedSubject = getSubjectById(subjectId);
                     req.setAttribute("selectedSubject", selectedSubject);
+                    req.getRequestDispatcher("/WEB-INF/subject.jsp").forward(req, resp);
                 }
                 if (option.equals("associatedCourses") && req.getParameter("subject") != null) {
                     Long subjectId = Long.valueOf(req.getParameter("subject"));
-                    req.setAttribute("courses", CoursesController.getSubjectAssociatedCourses(subjectId));
+                    List<Course> courses = CoursesController.getSubjectAssociatedCourses(subjectId);
+                    System.err.println(courses);
+                    req.setAttribute("courses", courses);
                     req.getRequestDispatcher("/WEB-INF/course.jsp").forward(req, resp);
                 }
-                req.getRequestDispatcher("/WEB-INF/subject.jsp").forward(req, resp);
             }
         }
         catch (Exception e){

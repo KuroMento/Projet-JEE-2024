@@ -61,8 +61,7 @@
         for(Course c : courses){
             mainDiv = mainDiv + "<label class=\"selectable-label\"> <input class=\"selectable-input\" type=\"radio\" name=\"course\" value=\"" + c.getIdentification() +"\">\n" +
                     "            <div class=\"selectable-div\"> Subject: " + c.getSubject().getLabel() + "#" + c.getIdentification() + " <br> " +
-                    " Teacher: " + c.getTeacher().getIdentification() +
-                    "<br> Number of students:"+ c.getStudents().size() + "</div>\n" +
+                    " Teacher: " + c.getTeacher().getIdentification() + "</div>\n" +
                     "</label>";
         }
     }

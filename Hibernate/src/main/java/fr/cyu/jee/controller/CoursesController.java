@@ -113,7 +113,7 @@ public class CoursesController extends HttpServlet {
      */
     public static Course getCourseById(Long id){
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM Course WHERE id = :id";
+            String hql = "SELECT c FROM Course c WHERE c.id = :id";
             Query<Course> userQuery = session.createQuery(hql)
                     .setParameter("id",id);
             return userQuery.uniqueResult();
@@ -131,7 +131,7 @@ public class CoursesController extends HttpServlet {
 
     public static List<Course> getSubjectAssociatedCourses(Long id){
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT c FROM Course c JOIN FETCH c.students s WHERE c.subject.id = :id";
+            String hql = "SELECT c FROM Course c WHERE c.subject.id = :id";
             Query<Course> userQuery = session.createQuery(hql)
                     .setParameter("id",id);
             return userQuery.getResultList();
