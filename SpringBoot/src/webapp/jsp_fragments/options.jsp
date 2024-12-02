@@ -1,3 +1,0 @@
-<aside>
-    Options
-</aside>
