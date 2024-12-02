@@ -41,15 +41,15 @@ CREATE TABLE Courses(
 );
 
 CREATE TABLE Grades(
-    id BIGINT,
+    id BIGINT PRIMARY KEY,
 	student_id VARCHAR(50),
 	course_id BIGINT,
-	grade_value DOUBLE,
-	grade_coefficient DOUBLE DEFAULT 1 NOT NULL,
-	FOREIGN KEY fk_student(studentId) REFERENCES Student(id),
-	FOREIGN KEY fk_courses(courseId) REFERENCES Courses(id),
-	CONSTRAINT grade_value CHECK (grade_value >= 0),
-	CONSTRAINT pk_grades PRIMARY KEY (studentId, courseId)
+	g_value DOUBLE,
+	g_coefficient DOUBLE DEFAULT 1 NOT NULL,
+	FOREIGN KEY fk_student(student_id) REFERENCES Student(id),
+	FOREIGN KEY fk_courses(course_id) REFERENCES Courses(id),
+	CONSTRAINT g_coefficient CHECK (g_coefficient >= 0)
+	CONSTRAINT g_value CHECK (g_value >= 0) AND (g_value <= 20)
 );
 
 CREATE TABLE Student_Courses(

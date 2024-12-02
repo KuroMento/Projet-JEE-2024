@@ -13,7 +13,7 @@ public class Course implements Serializable {
     @Column(name = "id", unique = true, updatable = false, nullable = false, length=50)
     private Long identification;
     @ManyToMany(mappedBy = "courses")
-    private Set<Student> students;
+    private List<Student> students;
     @ManyToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private Teacher teacher;
@@ -23,7 +23,7 @@ public class Course implements Serializable {
     private Subject subject;
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Grade> grades;
+    private List<Grade> grades;
 
     public Course(){}
 
@@ -35,11 +35,11 @@ public class Course implements Serializable {
         this.identification = identification;
     }
 
-    public Set<Student> getStudents() {
+    public List<Student> getStudents() {
         return students;
     }
 
-    public void setStudents(Set<Student> students) {
+    public void setStudents(List<Student> students) {
         this.students = students;
     }
 
@@ -59,11 +59,22 @@ public class Course implements Serializable {
         this.subject = subject;
     }
 
-    public Set<Grade> getGrades() {
+    public List<Grade> getGrades() {
         return grades;
     }
 
-    public void setGrades(Set<Grade> grades) {
+    public void setGrades(List<Grade> grades) {
         this.grades = grades;
+    }
+
+    public double getMean(){
+        double totalCoefficient = 0;
+        double mean = 0;
+        for( Grade g : grades ){
+            mean += g.getValue() * g.getCoefficient();
+            totalCoefficient += g.getCoefficient();
+        }
+        System.out.println("Mean " +mean + " | coef " + totalCoefficient);
+        return mean / totalCoefficient;
     }
 }

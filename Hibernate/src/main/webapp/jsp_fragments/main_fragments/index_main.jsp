@@ -1,12 +1,20 @@
 <%@ page import="fr.cyu.jee.model.*" %>
-<%@ page import="java.util.List" %><%
+<%@ page import="java.util.List" %>
+<%
   String mainDiv = "<main class=\"main\">";
+
+  String error = (String) request.getAttribute("error");
+  String option = request.getParameter("option");
+
   User currentUser = (User) session.getAttribute("loggedUser");
+
+  // You are not connected
   if( currentUser == null ){
     mainDiv = mainDiv + "<h1> Welcome to CY Board </h1><p> This site enables you to see the subjects and courses available if not logged in."
             + "If you are logged as a Student, you can access your grades, course's mean adn generate your complete result for your semester. <br> As a Teacher,"
             + " you can grade students. <br><br>And as an Admin, you can do many things such as searching through the user database as well as creating, updating or deleting anything in the database</p>";
   }
+  // You are connected and we print your profile
   else{
     mainDiv = mainDiv + "<h1> Welcome, " + currentUser.getIdentification() + "</h1>"
                 + "<p> Status : " + currentUser.getPermissions() + "<br>"

@@ -26,7 +26,10 @@ public class UserController extends HttpServlet {
         String action = req.getParameter("action");
         User loggedUser = (User) req.getSession().getAttribute("loggedUser");
 
+        // Only Admins can perform action on the database and have access to options
         if(loggedUser != null && loggedUser.getPermissions() == Permissions.ADMIN){
+
+            // IF ACTION
             if(action != null && !action.isBlank() && !action.isEmpty()){
                 User newUser = new User();
                 String id = req.getParameter("id");
@@ -120,7 +123,7 @@ public class UserController extends HttpServlet {
         }
     }
 
-    // Creation, Update and Deletion for the Subject class
+    // Creation, Update and Deletion for the User class
     public static void createUser(User user){
         Session session = null;
         Transaction transaction = null;
@@ -184,11 +187,29 @@ public class UserController extends HttpServlet {
         }
     }
 
+    public static Student getStudent(String studentId){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT DISTINCT s FROM Student s JOIN FETCH s.courses WHERE s.id = :id";
+            Query<Student> userQuery = session.createQuery(hql)
+                    .setParameter("id",studentId);
+            return userQuery.uniqueResult();
+        }
+    }
+
     public static Teacher getTeacher(User teacher){
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "SELECT DISTINCT t FROM Teacher t JOIN FETCH t.courses WHERE t.id = :id";
             Query<Teacher> userQuery = session.createQuery(hql)
                     .setParameter("id",teacher.getIdentification());
+            return userQuery.uniqueResult();
+        }
+    }
+
+    public static Teacher getTeacher(String teacherId){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT DISTINCT t FROM Teacher t JOIN FETCH t.courses WHERE t.id = :id";
+            Query<Teacher> userQuery = session.createQuery(hql)
+                    .setParameter("id",teacherId);
             return userQuery.uniqueResult();
         }
     }
