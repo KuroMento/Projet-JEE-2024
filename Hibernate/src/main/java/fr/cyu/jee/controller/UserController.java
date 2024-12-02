@@ -1,241 +1,184 @@
+
 package fr.cyu.jee.controller;
 
-import fr.cyu.jee.HibernateUtil;
-import fr.cyu.jee.model.*;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.*;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
+import fr.cyu.jee.ModelValidator;
+import fr.cyu.jee.model.Permissions;
+import fr.cyu.jee.model.User;
+import fr.cyu.jee.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpSession;
+import org.hibernate.query.Order;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-/**
- * Servlet that returns the list of users.
- */
-public class UserController extends HttpServlet {
-
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String option = req.getParameter("option");
-        String action = req.getParameter("action");
-        User loggedUser = (User) req.getSession().getAttribute("loggedUser");
-
-        // Only Admins can perform action on the database and have access to options
-        if(loggedUser != null && loggedUser.getPermissions() == Permissions.ADMIN){
-
-            // IF ACTION
-            if(action != null && !action.isBlank() && !action.isEmpty()){
-                User newUser = new User();
-                String id = req.getParameter("id");
-                String firstName = req.getParameter("firstName");
-                String lastName = req.getParameter("lastName");
-                String pw = req.getParameter("pw");
-                String contact = req.getParameter("contact");
-                SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
-                Date dateOfBirth = null;
-                try {
-                    dateOfBirth = sdf.parse(req.getParameter("dateOfBirth"));
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                }
-
-                Permissions permissions = null;
-                switch (req.getParameter("permissions")){
-                    case "ADMIN":
-                        permissions = Permissions.ADMIN;
-                        break;
-                    case "TEACHER":
-                        permissions = Permissions.TEACHER;
-                        break;
-                    default:
-                        permissions = Permissions.STUDENT;
-                        break;
-                }
-
-                newUser.setIdentification(id);
-                newUser.setFirstName(firstName);
-                newUser.setLastName(lastName);
-                newUser.setContact(contact);
-                newUser.setCryptedPassword(pw);
-                newUser.setDateOfBirth(dateOfBirth);
-                newUser.setPermissions(permissions);
-
-                if( action.equals("create") ){
-                    createUser(newUser);
-                }
-                if( action.equals("update") ){
-                    updateUser(newUser);
-                }
-                if( action.equals("delete") ){
-                    deleteUser(newUser);
-                }
-            }
-            if( option != null && !option.isEmpty() && !option.isBlank()){
-                if(option.equals("create")){
-                    User selectedUser = new User();
-                    req.setAttribute("selectedUser",selectedUser);
-                }
-                if( option.equals("update") || option.equals("delete") || option.equals("profile")){
-                    User selectedUser = getUserById(req.getParameter("id"));
-                    req.setAttribute("selectedUser",selectedUser);
-                }
-            }
-            else{
-                String[] permissions = req.getParameterValues("statusFilter");
-                String search = req.getParameter("search");
-                if( (permissions != null && permissions.length > 0) || (search != null && !search.isEmpty() && !search.isBlank()) ){
-                    String attribute = req.getParameter("attributeFilter");
-                    List<User> searchUsers = getSearchUsers(attribute,search, permissions);
-                    req.setAttribute("users", searchUsers);
-                }
-                else {
-                    req.setAttribute("users", getListUsers());
-                }
-            }
-        }
-        req.getRequestDispatcher("WEB-INF/user.jsp").forward(req, resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doGet(req, resp);
-    }
+@Controller
+public class UserController {
+    @Autowired
+    private UserRepository userRepository;
 
     /**
      *
-     * @return The users in the database as a list.
+     * @param session
+     * @param model
+     * @param option attribute option
+     * @param action attribute action
+     * @param user attribute user
+     * @param id attribute id
+     * @param pw attribute pw
+     * @param firstName attribute firstName
+     * @param lastName attribute lastName
+     * @param contact attribute contact
+     * @param dateOfBirth attribute dateOfBirth
+     * @param permissions attribute permissions
+     * @return
      */
-    public static List<User> getListUsers(){
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM User";
-            Query<User> userQuery = session.createQuery(hql);
-            return userQuery.getResultList();
-        }
-    }
-
-    public static User getUserById(String id){
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "FROM User WHERE id = :id";
-            Query<User> userQuery = session.createQuery(hql)
-                    .setParameter("id",id);
-            return userQuery.uniqueResult();
-        }
-    }
-
-    public static List<User> getSearchUsers(String attribute, String search, String[] permissions){
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT u FROM User u WHERE u." + attribute + " LIKE '"+ search + "%' ";
-            if( permissions != null ){
-                hql = hql + " AND (";
-
-                for(int i = 0; i < permissions.length; i++){
-                    if( i == permissions.length -1 ){
-                        hql = hql + " u.permissions = '" + permissions[i] + "')";
-                    }
-                    else{
-                        hql = hql + " u.permissions = '" + permissions[i] + "' OR ";
+    @Transactional
+    @GetMapping("/user")
+    public String userPage(HttpSession session, Model model, @RequestParam(defaultValue = "") String option, @RequestParam(defaultValue = "") String action,
+                           @RequestParam(defaultValue = "") String user, @RequestParam(defaultValue = "") String id, @RequestParam(defaultValue = "") String pw,
+                           @RequestParam(defaultValue = "") String firstName, @RequestParam(defaultValue = "") String lastName,
+                           @RequestParam(defaultValue = "") String contact,@RequestParam(defaultValue = "") String dateOfBirth,
+                           @RequestParam(defaultValue = "") String permissions) {
+        try {
+            if (session.getAttribute("loggedUser") != null && ((User) session.getAttribute("loggedUser")).getPermissions() == Permissions.ADMIN) {
+                //If an option was selected in the CRUD settings
+                if (!option.equals("")) {
+                    switch (option) {
+                        case "create":
+                            model.addAttribute("option", "create");
+                            model.addAttribute("selectedUser", new User());
+                            break;
+                        case "delete":
+                            if (!id.equals("")) {
+                                ModelValidator.validateParameter(id);
+                                deleteUser(id);
+                            }
+                            break;
+                        case "update":
+                            if (!id.equals("")) {
+                                ModelValidator.validateParameter(id);
+                                model.addAttribute("option", "update");
+                                model.addAttribute("selectedUser", userRepository.findUserByIdentification(id));
+                            }
+                            break;
                     }
                 }
+                //If an option from the CRUD settings needs to be applied
+                if (!action.equals("")) {
+                    switch (action) {
+                        case "create":
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+                            ModelValidator.validateParameter(id);
+                            ModelValidator.validateParameter(firstName);
+                            ModelValidator.validateParameter(lastName);
+                            ModelValidator.validateParameter(permissions);
+                            ModelValidator.validateParameter(contact);
+                            ModelValidator.validateParameter(pw);
+                            ModelValidator.validateParameter(dateOfBirth);
+                            try {
+                                createUser(id, pw, contact, Permissions.valueOf(permissions), firstName, lastName, formatter.parse(dateOfBirth));
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        case "update":
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+                            ModelValidator.validateParameter(id);
+                            ModelValidator.validateParameter(user);
+                            ModelValidator.validateParameter(firstName);
+                            ModelValidator.validateParameter(lastName);
+                            ModelValidator.validateParameter(permissions);
+                            ModelValidator.validateParameter(contact);
+                            ModelValidator.validateParameter(pw);
+                            ModelValidator.validateParameter(dateOfBirth);
+                            try {
+                                updateUser(id, user, firstName, lastName, Permissions.valueOf(permissions), contact, pw, format.parse(dateOfBirth));
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                    }
+                }
+                model.addAttribute("users", userRepository.findAll());
             }
-            Query<User> userQuery = session.createQuery(hql);
-            return userQuery.getResultList();
-        }
-    }
-
-    // Creation, Update and Deletion for the User class
-    public static void createUser(User user){
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            transaction = session.beginTransaction();
-            session.save(user);
-            transaction.commit();
+            return "user";
         }
         catch (Exception e){
-            if(transaction != null){ transaction.rollback(); }
             System.out.println(e);
+            model.addAttribute("error",e.getMessage());
         }
-        finally {
-            if( session != null){ session.close();}
-        }
+        return null;
     }
 
-    public static void updateUser(User user){
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            transaction = session.beginTransaction();
-            session.update(user);
-            transaction.commit();
-        }
-        catch (Exception e){
-            if(transaction != null){ transaction.rollback(); }
-            System.out.println(e);
-        }
-        finally {
-            if( session != null){ session.close();}
-        }
+    /**
+     * Delete the user with id as primary key
+     * @param id String identifiant of user
+     */
+    public void deleteUser(String id){
+        userRepository.deleteUserByIdentification(id);
     }
 
-    public static void deleteUser(User user){
-        Session session = null;
-        Transaction transaction = null;
-        try {
-            session = HibernateUtil.getSessionFactory().openSession();
-            transaction = session.beginTransaction();
-            session.delete(user);
-            transaction.commit();
-        }
-        catch (Exception e){
-            if(transaction != null){ transaction.rollback(); }
-            System.out.println(e);
-        }
-        finally {
-            if( session != null){ session.close();}
-        }
+    /**
+     * Create a new user with specific parameters
+     */
+    public void createUser(String id, String pw, String contact, Permissions permissions, String firstName, String lastName, Date dateOfBirth){
+        User newUser = new User();
+        newUser.setIdentification(id);
+        newUser.setCryptedPassword(pw);
+        newUser.setContact(contact);
+        newUser.setPermissions(permissions);
+        newUser.setFirstName(firstName);
+        newUser.setLastName(lastName);
+        newUser.setDateOfBirth(dateOfBirth);
+        userRepository.save(newUser);
     }
 
-    public static Student getStudent(User student){
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT s FROM Student s JOIN FETCH s.courses WHERE s.id = :id";
-            Query<Student> userQuery = session.createQuery(hql)
-                    .setParameter("id",student.getIdentification());
-            return userQuery.uniqueResult();
-        }
-    }
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    public static Student getStudent(String studentId){
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT s FROM Student s JOIN FETCH s.courses WHERE s.id = :id";
-            Query<Student> userQuery = session.createQuery(hql)
-                    .setParameter("id",studentId);
-            return userQuery.uniqueResult();
+    /**
+     * Update a specific user of primary key id with its new data
+     * @param id String id, old primary key of user
+     * @param newId String newId, new primary key of user
+     * @param firstName String firstName, first name of user
+     * @param lastName String lastName, last name of user
+     * @param permissions Permission permissions, permission of user
+     * @param contact String contact, contact of user
+     * @param cryptedPassword String cryptedPassword, password of user
+     */
+    public void updateUser(String id, String newId, String firstName, String lastName, Permissions permissions, String contact, String cryptedPassword, Date dateOfBirth){
+        if(id.equals(newId)){
+            User user = userRepository.findUserByIdentification(id);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setPermissions(permissions);
+            user.setContact(contact);
+            user.setCryptedPassword(cryptedPassword);
+            user.setDateOfBirth(dateOfBirth);
         }
-    }
-
-    public static Teacher getTeacher(User teacher){
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT t FROM Teacher t JOIN FETCH t.courses WHERE t.id = :id";
-            Query<Teacher> userQuery = session.createQuery(hql)
-                    .setParameter("id",teacher.getIdentification());
-            return userQuery.uniqueResult();
-        }
-    }
-
-    public static Teacher getTeacher(String teacherId){
-        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT DISTINCT t FROM Teacher t JOIN FETCH t.courses WHERE t.id = :id";
-            Query<Teacher> userQuery = session.createQuery(hql)
-                    .setParameter("id",teacherId);
-            return userQuery.uniqueResult();
+        else {
+            User oldUser = entityManager.find(User.class, id);
+            User user = new User();
+            user.setIdentification(newId);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setPermissions(permissions);
+            user.setContact(contact);
+            user.setCryptedPassword(cryptedPassword);
+            user.setDateOfBirth(dateOfBirth);
+            entityManager.remove(oldUser);
+            entityManager.persist(user);
         }
     }
 
