@@ -12,26 +12,26 @@ public class Student extends User implements Serializable {
             joinColumns = @JoinColumn(name = "student_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id")
     )
-    private Set<Course> courses;
+    private List<Course> courses;
 
     @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Grade> grades;
+    private List<Grade> grades;
 
     public Student(){ super(); }
 
-    public Set<Course> getCourses() {
+    public List<Course> getCourses() {
         return courses;
     }
 
-    public void setCourses(Set<Course> courses) {
+    public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
 
-    public Set<Grade> getGrades() {
+    public List<Grade> getGrades() {
         return grades;
     }
 
-    public void setGrades(Set<Grade> grades) {
+    public void setGrades(List<Grade> grades) {
         this.grades = grades;
     }
 }

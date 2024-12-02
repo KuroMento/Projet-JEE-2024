@@ -1,12 +1,23 @@
 <%@ page import="fr.cyu.jee.model.Subject" %>
 <%@ page import="java.util.List" %>
     <%
-        List<Subject> subjects = (List<Subject>) request.getAttribute("subjects");
-        Subject selectedSubject = (Subject) request.getAttribute("selectedSubject");
         String mainDiv = "<main class=\"main\">";
 
-        if( selectedSubject != null ){
-            String option = request.getParameter("option");
+        String error = (String) request.getAttribute("error");
+        String option = request.getParameter("option");
+
+        Subject selectedSubject = (Subject) request.getAttribute("selectedSubject");
+        List<Subject> subjects = (List<Subject>) request.getAttribute("subjects");
+
+        // If not connected, you will see all the subjects
+
+        // An error occurred !
+        if( error != null && !error.isEmpty() && !error.isBlank() ){
+            mainDiv = mainDiv + "<div style=\"color:red;\"> " + error + "</div>";
+        }
+
+        // You selected an option associated to an object
+        else if( selectedSubject != null ){
             if( option.equals("create") ){
                 mainDiv = mainDiv + "<input type=\"hidden\" name=\"action\" value=\"create\">" +
                         "                    <div class=\"form_input\">\n" +
@@ -48,6 +59,8 @@
                         "</label>" + "<button type=\"submit\" class=\"form_button\">Delete Subject</button>";
             }
         }
+
+        // Default Printing of every subject depending on status (Admin, Student, Teacher)
         else if ( subjects != null){
             for(Subject s : subjects){
                 mainDiv = mainDiv + "<label class=\"selectable-label\"> <input class=\"selectable-input\" type=\"radio\" name=\"subject\" value=\"" + s.getIdentification() +"\">\n" +
@@ -56,9 +69,13 @@
                         "</label>";
             }
         }
+
+        // The database is empty
         else{
             mainDiv = mainDiv + "No subjects currently !";
         }
+
+        // Closing the main and printing it
         mainDiv = mainDiv + "</main>";
         response.getWriter().println(mainDiv);
     %>

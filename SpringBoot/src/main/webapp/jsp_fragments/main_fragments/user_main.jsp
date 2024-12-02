@@ -3,17 +3,27 @@
 <%@ page import="java.util.List" %>
 <%
     String mainDiv = "<main class='main'>";
+
+    String error = (String) request.getAttribute("error");
+    String option = request.getParameter("option");
+
     User currentUser = (User) session.getAttribute("loggedUser");
 
+    // You are not connected
     if( currentUser == null){
         mainDiv = mainDiv + "<p> You are not <b>connected</b>. Note: Only Admins have access to user data ! </p> ";
     }
-    else if( currentUser != null && currentUser.getPermissions() == Permissions.ADMIN){
 
+    // An error occurred !
+    else if(error != null && !error.isBlank() && !error.isEmpty() ){
+        mainDiv = mainDiv + "<div style=\"color:red;\"> " + error + "</div>";
+    }
+
+    // You are an Admin
+    else if( currentUser != null && currentUser.getPermissions() == Permissions.ADMIN){
         User selectedUser = (User) request.getAttribute("selectedUser");
         List<User> users = (List<User>) request.getAttribute("users");
         if( selectedUser != null ){
-            String option = request.getParameter("option");
             if( option.equals("create")){
                 mainDiv = mainDiv +  "<input type=\"hidden\" name=\"action\" value=\"create\">"
                         + "<div class=\"form_input\">\n" +
@@ -105,9 +115,13 @@
             }
         }
     }
+
+    // You are a Student or a Teacher
     else{
         mainDiv = mainDiv + "<p style=\"color:red;\"> You are not <b>allowed access to the user database</b> as a " + currentUser.getPermissions() + "</p>";
     }
+
+    // Closing the main and printing it
     mainDiv = mainDiv + "</main>";
     response.getWriter().print(mainDiv);
 %>

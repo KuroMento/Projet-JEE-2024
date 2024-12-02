@@ -127,6 +127,9 @@ body {
     border-width: 3px 0 0 0;
     border-style: solid;
     border-color: #2E7D32;
+
+    text-align: center;
+    padding: 15px 0 15px 0;
 }
 
 /************************
@@ -354,7 +357,6 @@ body {
 
 /* Style général pour les groupes */
 .radio-group, .checkbox-group {
-    border: 3px dashed black;
     display: flex;
     flex-direction: column; /* Organiser les éléments verticalement */
     gap: 5px; /* Espacement entre les options */
