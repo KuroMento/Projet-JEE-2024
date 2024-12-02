@@ -21,12 +21,6 @@
   mainDiv = mainDiv + "</form>\n" +
           "                <div>\n" +
           "                    <h1>Connexion Form</h1>\n" +
-          "                    <p>You can use multiples credentials to test the different functionalities :</p>\n" +
-          "                    <ul>\n" +
-          "                        <li>To connect as an admin, use : Admin | 1234</li>\n" +
-          "                        <li>To connect as a student, use : Student | cytech0001</li>\n" +
-          "                        <li>To connect as a teacher, use : Teacher | cytech0001</li>\n" +
-          "                    </ul>\n" +
           "                </div>\n" +
           "\n" +
           "            </div>\n" +
