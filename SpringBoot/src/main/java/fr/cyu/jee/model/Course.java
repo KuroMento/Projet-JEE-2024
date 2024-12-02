@@ -66,4 +66,20 @@ public class Course implements Serializable {
     public void setGrades(Set<Grade> grades) {
         this.grades = grades;
     }
+    
+    /**
+     * Return the mean of the course
+     * @return mean
+     */
+    public double getMean(){
+        double totalCoefficient = 0;
+        double mean = 0;
+        for( Grade g : grades ){
+            mean += g.getValue() * g.getCoefficient();
+            totalCoefficient += g.getCoefficient();
+        }
+        System.out.println("Mean " +mean + " | coef " + totalCoefficient);
+        return mean / totalCoefficient;
+    }
+    
 }
