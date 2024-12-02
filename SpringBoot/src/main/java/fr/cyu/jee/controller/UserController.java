@@ -52,10 +52,8 @@ public class UserController {
                         model.addAttribute("selectedUser", new User());
                         break;
                     case "delete":
-                        //System.out.println("DELETE");
                         if(!id.equals("")) {
-                            //System.out.println(id);
-                            deleteUser(user);
+                            deleteUser(id);
                         }
                         break;
                     case "update":
