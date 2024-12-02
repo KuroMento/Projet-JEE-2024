@@ -1,127 +1,177 @@
-<%@ page import="fr.cyu.jee.model.User" %>
-<%@ page import="fr.cyu.jee.model.Permissions" %>
-<%@ page import="java.util.List" %>
-<%
-    String mainDiv = "<main class='main'>";
 
-    String error = (String) request.getAttribute("error");
-    String option = request.getParameter("option");
+package fr.cyu.jee.controller;
 
-    User currentUser = (User) session.getAttribute("loggedUser");
+import fr.cyu.jee.ModelValidator;
+import fr.cyu.jee.model.Permissions;
+import fr.cyu.jee.model.User;
+import fr.cyu.jee.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-    // You are not connected
-    if( currentUser == null){
-        mainDiv = mainDiv + "<p> You are not <b>connected</b>. Note: Only Admins have access to user data ! </p> ";
-    }
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
-    // An error occurred !
-    else if(error != null && !error.isBlank() && !error.isEmpty() ){
-        mainDiv = mainDiv + "<div style=\"color:red;\"> " + error + "</div>";
-    }
+@Controller
+public class UserController {
+    @Autowired
+    private UserRepository userRepository;
 
-    // You are an Admin
-    else if( currentUser != null && currentUser.getPermissions() == Permissions.ADMIN){
-        User selectedUser = (User) request.getAttribute("selectedUser");
-        List<User> users = (List<User>) request.getAttribute("users");
-        if( selectedUser != null ){
-            if( option.equals("create")){
-                mainDiv = mainDiv +  "<input type=\"hidden\" name=\"action\" value=\"create\">"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"id\">User Identification | Username </label>\n" +
-                        "     <input type=\"text\" id=\"id\" name=\"id\" placeholder=\"Ketk\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"pw\">User Password </label>\n" +
-                        "     <input type=\"text\" id=\"pw\" name=\"pw\" placeholder=\"qwerty123\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"firstName\">First Name </label>\n" +
-                        "     <input type=\"text\" id=\"firstName\" name=\"firstName\" placeholder=\"Matthias\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"lastName\">Last Name </label>\n" +
-                        "     <input type=\"text\" id=\"lastName\" name=\"lastName\" placeholder=\"Franchini\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"contact\">Contact | Email </label>\n" +
-                        "     <input type=\"text\" id=\"contact\" name=\"contact\" placeholder=\"franchim@cy-tech.fr\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"dateOfBirth\">Date of birth </label>\n" +
-                        "     <input type=\"date\" id=\"dateOfBirth\" name=\"dateOfBirth\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"id\">Status | Permissions </label>\n" +
-                            "<select name=\"permissions\" id=\"permissions\" required>\n" +
-                        "<option value=\"\" disabled selected>-- Select a status --</option>" +
-                        "    <option value=\"ADMIN\">ADMIN</option>\n" +
-                        "    <option value=\"TEACHER\">TEACHER</option>\n" +
-                        "    <option value=\"STUDENT\">STUDENT</option>\n" +
-                        "    </select>"+
-                        "  </div>\n"
-                        + "<button type=\"submit\" class=\"form_button\">Create User</button>";
+    /**
+     *
+     * @param session
+     * @param model
+     * @param option attribute option
+     * @param action attribute action
+     * @param user attribute user
+     * @param id attribute id
+     * @param pw attribute pw
+     * @param firstName attribute firstName
+     * @param lastName attribute lastName
+     * @param contact attribute contact
+     * @param dateOfBirth attribute dateOfBirth
+     * @param permissions attribute permissions
+     * @return
+     */
+    @Transactional
+    @GetMapping("/user")
+    public String userPage(HttpSession session, Model model, @RequestParam(defaultValue = "") String option, @RequestParam(defaultValue = "") String action,
+                           @RequestParam(defaultValue = "") String user, @RequestParam(defaultValue = "") String id, @RequestParam(defaultValue = "") String pw,
+                           @RequestParam(defaultValue = "") String firstName, @RequestParam(defaultValue = "") String lastName,
+                           @RequestParam(defaultValue = "") String contact,@RequestParam(defaultValue = "") String dateOfBirth,
+                           @RequestParam(defaultValue = "") String permissions) {
+        try {
+            if (session.getAttribute("loggedUser") != null && ((User) session.getAttribute("loggedUser")).getPermissions() == Permissions.ADMIN) {
+                //If an option was selected in the CRUD settings
+                if (!option.equals("")) {
+                    switch (option) {
+                        case "create":
+                            model.addAttribute("option", "create");
+                            model.addAttribute("selectedUser", new User());
+                            break;
+                        case "delete":
+                            if (!id.equals("")) {
+                                ModelValidator.validateParameter(id);
+                                deleteUser(id);
+                            }
+                            break;
+                        case "update":
+                            if (!id.equals("")) {
+                                ModelValidator.validateParameter(id);
+                                model.addAttribute("option", "update");
+                                model.addAttribute("selectedUser", userRepository.findUserByIdentification(id));
+                            }
+                            break;
+                    }
+                }
+                //If an option from the CRUD settings needs to be applied
+                if (!action.equals("")) {
+                    switch (action) {
+                        case "create":
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+                            ModelValidator.validateParameter(id);
+                            ModelValidator.validateParameter(firstName);
+                            ModelValidator.validateParameter(lastName);
+                            ModelValidator.validateParameter(permissions);
+                            ModelValidator.validateParameter(contact);
+                            ModelValidator.validateParameter(pw);
+                            ModelValidator.validateParameter(dateOfBirth);
+                            try {
+                                createUser(id, pw, contact, Permissions.valueOf(permissions), firstName, lastName, formatter.parse(dateOfBirth));
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        case "update":
+                            ModelValidator.validateParameter(id);
+                            ModelValidator.validateParameter(user);
+                            ModelValidator.validateParameter(firstName);
+                            ModelValidator.validateParameter(lastName);
+                            ModelValidator.validateParameter(permissions);
+                            ModelValidator.validateParameter(contact);
+                            ModelValidator.validateParameter(pw);
+                            ModelValidator.validateParameter(dateOfBirth);
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+                            updateUser(id, user, firstName, lastName, Permissions.valueOf(permissions), contact, pw, format.parse(dateOfBirth));
+                            break;
+                    }
+                }
+                model.addAttribute("users", userRepository.findAll());
             }
-            if( option.equals("update")){
-                mainDiv = mainDiv +  "<input type=\"hidden\" name=\"action\" value=\"update\">"
-                        + "<input type=\"hidden\" name=\"id\" value=\"" + selectedUser.getIdentification() + "\">"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"user\">User Identification | Username </label>\n" +
-                        "     <input type=\"text\" id=\"user\" name=\"user\" value=\"" + selectedUser.getIdentification() + "\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"pw\">User Password </label>\n" +
-                        "     <input type=\"text\" id=\"pw\" name=\"pw\" value=\"" + selectedUser.getCryptedPassword() + "\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"firstName\">First Name </label>\n" +
-                        "     <input type=\"text\" id=\"firstName\" name=\"firstName\" value=\"" + selectedUser.getFirstName() + "\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"lastName\">Last Name </label>\n" +
-                        "     <input type=\"text\" id=\"lastName\" name=\"lastName\" value=\"" + selectedUser.getLastName() + "\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"contact\">Contact | Email </label>\n" +
-                        "     <input type=\"text\" id=\"contact\" name=\"contact\" value=\"" + selectedUser.getContact() + "\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"dateOfBirth\">Date of birth </label>\n" +
-                        "     <input type=\"date\" id=\"dateOfBirth\" name=\"dateOfBirth\" required>\n" +
-                        "  </div>\n"
-                        + "<div class=\"form_input\">\n" +
-                        "     <label for=\"id\">Status | Permissions </label>\n" +
-                        "<select name=\"permissions\" id=\"permissions\" required>\n" +
-                        "<option value=\"\" disabled selected>-- Select a status --</option>" +
-                        "    <option value=\"ADMIN\">ADMIN</option>\n" +
-                        "    <option value=\"TEACHER\">TEACHER</option>\n" +
-                        "    <option value=\"STUDENT\">STUDENT</option>\n" +
-                        "    </select>"+
-                        "  </div>\n"
-                        + "<button type=\"submit\" class=\"form_button\">Update User</button>";
-            }
-            if( option.equals("delete")){
-                mainDiv = mainDiv + "<label class=\"selectable-label\"> <input class=\"selectable-input\" type=\"radio\" name=\"id\" value=\"" + selectedUser.getIdentification() + "\"> " +
-                        "<div class=\"selectable-div\"> Username: " + selectedUser.getIdentification() + "</div> </label>"
-                    +  "<input type=\"hidden\" name=\"action\" value=\"delete\">" + "<input type=\"hidden\" name=\"user\" value=\"" + selectedUser.getIdentification() + "\">"
-                + "<button type=\"submit\" class=\"form_button\">Delete User</button>";
-            }
+            return "user";
         }
-        if( users != null && selectedUser == null){
-            mainDiv = mainDiv + "<div><input type=\"search\" name=\"search\" placeholder=\"Enter a firstname, lastname or an email...\"/><button class=\"option_button\" type='submit'> Search User </button></div>";
-            for(User u : users){
-                mainDiv = mainDiv +
-                        "<label class=\"selectable-label\"> <input class=\"selectable-input\" type=\"radio\" name=\"id\" value=\"" + u.getIdentification() + "\"> " +
-                        "<div class=\"selectable-div\"> Username: " + u.getIdentification() + "</div> </label>";
-            }
+        catch (Exception e){
+            System.out.println(e);
+            model.addAttribute("error",e.getMessage());
+        }
+        return null;
+    }
+
+    /**
+     * Delete the user with id as primary key
+     * @param id String identifiant of user
+     */
+    public void deleteUser(String id){
+        userRepository.deleteUserByIdentification(id);
+    }
+
+    /**
+     * Create a new user with specific parameters
+     */
+    public void createUser(String id, String pw, String contact, Permissions permissions, String firstName, String lastName, Date dateOfBirth){
+        User newUser = new User();
+        newUser.setIdentification(id);
+        newUser.setCryptedPassword(pw);
+        newUser.setContact(contact);
+        newUser.setPermissions(permissions);
+        newUser.setFirstName(firstName);
+        newUser.setLastName(lastName);
+        newUser.setDateOfBirth(dateOfBirth);
+        userRepository.save(newUser);
+    }
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    /**
+     * Update a specific user of primary key id with its new data
+     * @param id String id, primary key of user
+     * @param firstName String firstName, first name of user
+     * @param lastName String lastName, last name of user
+     * @param permissions Permission permissions, permission of user
+     * @param contact String contact, contact of user
+     * @param cryptedPassword String cryptedPassword, password of user
+     */
+    public void updateUser(String id, String newId, String firstName, String lastName, Permissions permissions, String contact, String cryptedPassword, Date dateOfBirth){
+        if(id.equals(newId)){
+            User user = userRepository.findUserByIdentification(id);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setPermissions(permissions);
+            user.setContact(contact);
+            user.setCryptedPassword(cryptedPassword);
+            user.setDateOfBirth(dateOfBirth);
+        }
+        else {
+            User oldUser = entityManager.find(User.class, id);
+            User user = new User();
+            user.setIdentification(newId);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setPermissions(permissions);
+            user.setContact(contact);
+            user.setCryptedPassword(cryptedPassword);
+            user.setDateOfBirth(dateOfBirth);
+            entityManager.remove(oldUser);
+            entityManager.persist(user);
         }
     }
 
-    // You are a Student or a Teacher
-    else{
-        mainDiv = mainDiv + "<p style=\"color:red;\"> You are not <b>allowed access to the user database</b> as a " + currentUser.getPermissions() + "</p>";
-    }
-
-    // Closing the main and printing it
-    mainDiv = mainDiv + "</main>";
-    response.getWriter().print(mainDiv);
-%>
+}
