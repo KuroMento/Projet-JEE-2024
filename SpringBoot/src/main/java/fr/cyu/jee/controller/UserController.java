@@ -1,5 +1,7 @@
+
 package fr.cyu.jee.controller;
 
+import fr.cyu.jee.ModelValidator;
 import fr.cyu.jee.model.Permissions;
 import fr.cyu.jee.model.User;
 import fr.cyu.jee.repository.UserRepository;
@@ -42,48 +44,58 @@ public class UserController {
                            @RequestParam(defaultValue = "") String user, @RequestParam(defaultValue = "") String id, @RequestParam(defaultValue = "") String pw,
                            @RequestParam(defaultValue = "") String firstName, @RequestParam(defaultValue = "") String lastName,
                            @RequestParam(defaultValue = "") String contact,@RequestParam(defaultValue = "") String dateOfBirth,
-                           @RequestParam(defaultValue = "") String permissions){
-        if(session.getAttribute("loggedUser") != null && ((User)session.getAttribute("loggedUser")).getPermissions() == Permissions.ADMIN){
-            //If an option was selected in the CRUD settings
-            if(!option.equals("")){
-                switch(option){
-                    case "create":
-                        model.addAttribute("option", "create");
-                        model.addAttribute("selectedUser", new User());
-                        break;
-                    case "delete":
-                        if(!id.equals("")) {
-                            deleteUser(id);
-                        }
-                        break;
-                    case "update":
-                        if(!id.equals("")) {
-                            model.addAttribute("option", "update");
-                            model.addAttribute("selectedSubject", userRepository.findUserByIdentification(user));
-                        }
-                        break;
+                           @RequestParam(defaultValue = "") String permissions) {
+        try {
+            if (session.getAttribute("loggedUser") != null && ((User) session.getAttribute("loggedUser")).getPermissions() == Permissions.ADMIN) {
+                //If an option was selected in the CRUD settings
+                if (!option.equals("")) {
+                    switch (option) {
+                        case "create":
+                            model.addAttribute("option", "create");
+                            model.addAttribute("selectedUser", new User());
+                            break;
+                        case "delete":
+                            if (!id.equals("")) {
+                                ModelValidator.validateDouble(id);
+                                deleteUser(id);
+                            }
+                            break;
+                        case "update":
+                            if (!id.equals("")) {
+                                ModelValidator.validateDouble(id);
+                                model.addAttribute("option", "update");
+                                model.addAttribute("selectedSubject", userRepository.findUserByIdentification(id));
+                            }
+                            break;
+                    }
                 }
-            }
-            //If an option from the CRUD settings needs to be applied
-            if(!action.equals("")){
-                switch(action){
-                    case "create":
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
-                        try {
-                            createUser(id, pw, contact, Permissions.valueOf(permissions), firstName, lastName, formatter.parse(dateOfBirth));
-                        } catch (ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                        break;
-                    case "update":
-                        updateUser(user);
-                        break;
+                //If an option from the CRUD settings needs to be applied
+                if (!action.equals("")) {
+                    switch (action) {
+                        case "create":
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+                            try {
+                                createUser(id, pw, contact, Permissions.valueOf(permissions), firstName, lastName, formatter.parse(dateOfBirth));
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
+                            break;
+                        case "update":
+                            updateUser(id);
+                            break;
+                    }
                 }
+                model.addAttribute("users", userRepository.findAll());
             }
-            model.addAttribute("users", userRepository.findAll());
+            return "user";
         }
-        return "user";
+        catch (Exception e){
+            System.out.println(e);
+            model.addAttribute("error",e.getMessage());
+        }
+        return null;
     }
+
     /**
      * Delete the user with id as primary key
      * @param id String identifiant of user
