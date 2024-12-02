@@ -77,10 +77,10 @@
         }
         if( option.equals("delete")){
             mainDiv = mainDiv + "<input type=\"hidden\" name=\"action\" value=\"delete\">" +
-                    "<label class=\"selectable-label\">\n" +
-                    "    <input class=\"selectable-input\" type=\"radio\" name=\"grade\" value=\"\"/>\n" +
-                    "    <div class=\"selectable-div\">Subject : " + selectedGrade.getCourse().getSubject().getLabel() + " | Teacher : " + selectedGrade.getCourse().getTeacher().getIdentification()
-                    + " | Grade : " + selectedGrade.getValue() + " | Coefficient : " + selectedGrade.getCoefficient() + "</div>\n" +
+                    "<label class=\"selectable-label\">" +
+                    "    <input class=\"selectable-input\" type=\"radio\" name=\"grade\" value=\"" + selectedGrade.getIdentification() +"\"/>\n" +
+                    "    <div class=\"selectable-div\">Course : " + selectedGrade.getCourse().getSubject().getLabel() + "#"+ selectedGrade.getCourse().getIdentification() + " | Teacher : " + selectedGrade.getCourse().getTeacher().getIdentification()
+                    + " | Label : " + selectedGrade.getLabel() + " | Grade : " + selectedGrade.getValue() + "| Coefficient : "+ selectedGrade.getCoefficient() + "</div>\n" +
                     "</label>"
                     + "  <button type=\"submit\" class=\"form_button\"> Delete Grade </button>";
         }
@@ -104,8 +104,8 @@
         for(Grade g : grades){
             mainDiv = mainDiv + "<label class=\"selectable-label\">" +
                     "    <input class=\"selectable-input\" type=\"radio\" name=\"grade\" value=\"" + g.getIdentification() +"\"/>\n" +
-                    "    <div class=\"selectable-div\">Course : " + g.getCourse().getSubject().getLabel() + " | Teacher : " + g.getCourse().getTeacher().getIdentification()
-                    + " | Grade : " + g.getValue() + "| Coefficient : "+ g.getCoefficient() + "</div>\n" +
+                    "    <div class=\"selectable-div\">Course : " + g.getCourse().getSubject().getLabel() + "#"+ g.getCourse().getIdentification() + " | Teacher : " + g.getCourse().getTeacher().getIdentification()
+                    + " | Label : " + g.getLabel() + " | Grade : " + g.getValue() + "| Coefficient : "+ g.getCoefficient() + "</div>\n" +
                     "</label>";
         }
     }

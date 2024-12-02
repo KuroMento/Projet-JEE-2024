@@ -17,12 +17,12 @@ public class Subject implements Serializable {
      * The name of the class
      */
     @Basic
-    @Column(name = "label", nullable = true, length = 30)
+    @Column(name = "label", nullable = true, length = 50)
     private String label;
     /**
      * A short description of the class content
      */
-    @Column(name = "descr", nullable = false, length=50)
+    @Column(name = "descr", nullable = false, length=200)
     private String description;
     /**
      * A number to identify each class
@@ -39,7 +39,7 @@ public class Subject implements Serializable {
     private double coefficient;
 
     @OneToMany(mappedBy = "subject",cascade = CascadeType.ALL)
-    private Set<Course> courses;
+    private List<Course> courses;
 
     public Subject(){}
 
@@ -110,14 +110,14 @@ public class Subject implements Serializable {
     /**
      * @return subject's available courses.
      */
-    public Set<Course> getCourses() {
+    public List<Course> getCourses() {
         return courses;
     }
 
     /**
      * @param courses subject's available courses.
      */
-    public void setCourses(Set<Course> courses) {
+    public void setCourses(List<Course> courses) {
         this.courses = courses;
     }
 }

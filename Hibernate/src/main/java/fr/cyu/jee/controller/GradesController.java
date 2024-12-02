@@ -12,6 +12,7 @@ import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -69,6 +70,17 @@ public class GradesController extends HttpServlet {
                 }
                 req.getRequestDispatcher("/WEB-INF/grade.jsp").forward(req, resp);
             }
+            User currentUser = (User) req.getSession().getAttribute("loggedUser");
+            if( currentUser != null && currentUser.getPermissions() == Permissions.STUDENT ) {
+                req.setAttribute("grades", getUserListGrades(currentUser.getIdentification()));
+            }
+            else if( currentUser != null && currentUser.getPermissions() == Permissions.ADMIN ) {
+                req.setAttribute("grades", getGradesByCourses());
+            }
+            else{
+                req.setAttribute("grades",null);
+            }
+            req.getRequestDispatcher("WEB-INF/grade.jsp").forward(req, resp);
         }
         catch (Exception e){
             System.out.println(e);
@@ -76,13 +88,6 @@ public class GradesController extends HttpServlet {
             req.setAttribute("error",e.getMessage());
             req.getRequestDispatcher("/WEB-INF/grade.jsp").forward(req,resp);
         }
-        User currentUser = (User) req.getSession().getAttribute("loggedUser");
-
-        if( currentUser != null ) {
-            req.setAttribute("grades", getUserListGrades(currentUser.getIdentification()));
-        }
-
-        req.getRequestDispatcher("WEB-INF/grade.jsp").forward(req, resp);
     }
 
     @Override
@@ -106,7 +111,7 @@ public class GradesController extends HttpServlet {
         ModelValidator.validateDouble(coefficient);
 
         Student student = UserController.getStudent(studentId);
-        Course course = CoursesController.getCourseById(courseId);
+        Course course = CoursesController.getCourseById(Long.valueOf(courseId));
 
         Grade newGrade = new Grade();
         newGrade.setLabel(label);
@@ -128,6 +133,21 @@ public class GradesController extends HttpServlet {
             Query<Grade> userQuery = session.createQuery(hql)
                     .setParameter("id",id);
             return userQuery.getResultList();
+        }
+    }
+
+    public static List<Grade> getGradesByCourses(){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT DISTINCT c FROM Course c JOIN FETCH c.grades g ORDER BY c.id";
+            Query<Course> userQuery = session.createQuery(hql);
+            List<Course> allCourses =  userQuery.getResultList();
+            List<Grade> allGrades = new ArrayList<>();
+            for( Course c : allCourses ){
+                for( Grade g : c.getGrades() ){
+                    allGrades.add(g);
+                }
+            }
+            return allGrades;
         }
     }
 

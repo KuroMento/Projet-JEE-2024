@@ -26,21 +26,20 @@ public class SubjectController extends HttpServlet{
         try {
             // We verify if there are action to perform
             if (action != null && !action.isEmpty() && !action.isBlank()) {
-                Subject newSubject = null;
+                Subject newSubject = new Subject();
                 // Choosing the action to perform after initialisation
                 if (action.equals("create")) {
                     newSubject = instantiateSubject(req);
                     createSubject(newSubject);
                 }
                 if (action.equals("update")) {
-                    Long subjectId = Long.valueOf(String.valueOf(req.getParameter("subject")));
+                    Long subjectId = Long.valueOf(req.getParameter("subject"));
                     newSubject = instantiateSubject(req);
                     newSubject.setIdentification(subjectId);
                     updateSubject(newSubject);
                 }
                 if (action.equals("delete")) {
-                    Long subjectId = Long.valueOf(String.valueOf(req.getParameter("subject")));
-                    newSubject = instantiateSubject(req);
+                    Long subjectId = Long.valueOf(req.getParameter("subject"));
                     newSubject.setIdentification(subjectId);
                     deleteSubject(newSubject);
                 }
@@ -51,19 +50,18 @@ public class SubjectController extends HttpServlet{
                     req.setAttribute("selectedSubject", selectedSubject);
                 }
                 if (option.equals("update") && req.getParameter("subject") != null) {
-                    Long subjectId = Long.valueOf(String.valueOf(req.getParameter("subject")));
+                    Long subjectId = Long.valueOf(req.getParameter("subject"));
                     Subject selectedSubject = getSubjectById(subjectId);
                     req.setAttribute("selectedSubject", selectedSubject);
                 }
                 if (option.equals("delete") && req.getParameter("subject") != null) {
-                    Long subjectId = Long.valueOf(String.valueOf(req.getParameter("subject")));
+                    Long subjectId = Long.valueOf(req.getParameter("subject"));
                     Subject selectedSubject = getSubjectById(subjectId);
                     req.setAttribute("selectedSubject", selectedSubject);
                 }
                 if (option.equals("associatedCourses") && req.getParameter("subject") != null) {
-                    Long subjectId = Long.valueOf(String.valueOf(req.getParameter("subject")));
-                    Subject selectedSubject = getSubjectById(subjectId);
-                    req.setAttribute("courses", selectedSubject.getCourses());
+                    Long subjectId = Long.valueOf(req.getParameter("subject"));
+                    req.setAttribute("courses", CoursesController.getSubjectAssociatedCourses(subjectId));
                     req.getRequestDispatcher("/WEB-INF/course.jsp").forward(req, resp);
                 }
                 req.getRequestDispatcher("/WEB-INF/subject.jsp").forward(req, resp);
@@ -115,7 +113,7 @@ public class SubjectController extends HttpServlet{
 
     public static Subject getSubjectById(Long id){
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            String hql = "SELECT s FROM Subject JOIN FETCH s.courses WHERE id = :id";
+            String hql = "SELECT s FROM Subject s JOIN FETCH s.courses WHERE s.id = :id";
             Query<Subject> userQuery = session.createQuery(hql)
                     .setParameter("id",id);
             return userQuery.uniqueResult();

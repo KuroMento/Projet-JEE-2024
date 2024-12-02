@@ -19,13 +19,13 @@ public class Grade implements Serializable {
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
-    @Column(name = "value", nullable = false, length=50)
+    @Column(name = "g_value", nullable = false, length=50)
     private double value;
 
     @Column(name = "label", nullable = false, length=50)
     private String label;
 
-    @Column(name = "coefficient", nullable = false, length=50)
+    @Column(name = "g_coefficient", nullable = false, length=50)
     private double coefficient;
 
     public Grade(){ }

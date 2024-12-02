@@ -25,7 +25,7 @@ public class CoursesController extends HttpServlet {
         try {
             // We verify if there are action to perform
             if (action != null && !action.isEmpty() && !action.isBlank()) {
-                Course newCourse = null;
+                Course newCourse = new Course();
                 // Choosing the action to perform after initialisation
                 if (action.equals("create")) {
                     newCourse = instantiateCourse(req);
@@ -39,23 +39,24 @@ public class CoursesController extends HttpServlet {
                 }
                 if (action.equals("delete")) {
                     Long courseId = Long.valueOf(String.valueOf(req.getParameter("subject")));
-                    newCourse = instantiateCourse(req);
                     newCourse.setIdentification(courseId);
                     deleteCourse(newCourse);
                 }
             }
+
+            // We want to perform a future action maybe ?
             if (option != null && !option.isBlank() && !option.isEmpty()) {
                 if (option.equals("create")) {
                     Course selctedCourse = new Course();
                     req.setAttribute("selectedCourse", selctedCourse);
                 }
                 if (option.equals("update") && req.getParameter("course") != null) {
-                    String courseId = String.valueOf(req.getParameter("course"));
+                    Long courseId = Long.valueOf(req.getParameter("course"));
                     Course selectedCourse = getCourseById(courseId);
                     req.setAttribute("selectedCourse", selectedCourse);
                 }
                 if (option.equals("delete") && req.getParameter("course") != null) {
-                    String courseId = String.valueOf(req.getParameter("course"));
+                    Long courseId = Long.valueOf(req.getParameter("course"));
                     Course selectedCourse = getCourseById(courseId);
                     req.setAttribute("selectedCourse", selectedCourse);
                 }
@@ -110,7 +111,7 @@ public class CoursesController extends HttpServlet {
      *
      * @return The corresponding course according to the id
      */
-    public static Course getCourseById(String id){
+    public static Course getCourseById(Long id){
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "FROM Course WHERE id = :id";
             Query<Course> userQuery = session.createQuery(hql)
@@ -122,6 +123,15 @@ public class CoursesController extends HttpServlet {
     public static List<Course> getCourseWithGradesByStudentId(String id){
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
             String hql = "SELECT DISTINCT c FROM Course c JOIN FETCH c.grades g WHERE g.student.id = :id";
+            Query<Course> userQuery = session.createQuery(hql)
+                    .setParameter("id",id);
+            return userQuery.getResultList();
+        }
+    }
+
+    public static List<Course> getSubjectAssociatedCourses(Long id){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT c FROM Course c JOIN FETCH c.students s WHERE c.subject.id = :id";
             Query<Course> userQuery = session.createQuery(hql)
                     .setParameter("id",id);
             return userQuery.getResultList();

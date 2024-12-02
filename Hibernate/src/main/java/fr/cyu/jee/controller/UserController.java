@@ -81,17 +81,22 @@ public class UserController extends HttpServlet {
                     User selectedUser = new User();
                     req.setAttribute("selectedUser",selectedUser);
                 }
-                if( option.equals("update")){
-                    User selectedUser = getUserById(req.getParameter("id"));
-                    req.setAttribute("selectedUser",selectedUser);
-                }
-                if( option.equals("delete")){
+                if( option.equals("update") || option.equals("delete") || option.equals("profile")){
                     User selectedUser = getUserById(req.getParameter("id"));
                     req.setAttribute("selectedUser",selectedUser);
                 }
             }
             else{
-                req.setAttribute("users",getListUsers());
+                String[] permissions = req.getParameterValues("statusFilter");
+                String search = req.getParameter("search");
+                if( (permissions != null && permissions.length > 0) || (search != null && !search.isEmpty() && !search.isBlank()) ){
+                    String attribute = req.getParameter("attributeFilter");
+                    List<User> searchUsers = getSearchUsers(attribute,search, permissions);
+                    req.setAttribute("users", searchUsers);
+                }
+                else {
+                    req.setAttribute("users", getListUsers());
+                }
             }
         }
         req.getRequestDispatcher("WEB-INF/user.jsp").forward(req, resp);
@@ -120,6 +125,26 @@ public class UserController extends HttpServlet {
             Query<User> userQuery = session.createQuery(hql)
                     .setParameter("id",id);
             return userQuery.uniqueResult();
+        }
+    }
+
+    public static List<User> getSearchUsers(String attribute, String search, String[] permissions){
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            String hql = "SELECT u FROM User u WHERE u." + attribute + " LIKE '"+ search + "%' ";
+            if( permissions != null ){
+                hql = hql + " AND (";
+
+                for(int i = 0; i < permissions.length; i++){
+                    if( i == permissions.length -1 ){
+                        hql = hql + " u.permissions = '" + permissions[i] + "')";
+                    }
+                    else{
+                        hql = hql + " u.permissions = '" + permissions[i] + "' OR ";
+                    }
+                }
+            }
+            Query<User> userQuery = session.createQuery(hql);
+            return userQuery.getResultList();
         }
     }
 
