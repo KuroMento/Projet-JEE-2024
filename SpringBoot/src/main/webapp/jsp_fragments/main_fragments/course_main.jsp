@@ -49,9 +49,10 @@
         }
         if( option.equals("delete") ){
             mainDiv = mainDiv + "<label class=\"selectable-label\"> <input class=\"selectable-input\" type=\"radio\" name=\"course\" value=\"" + selectedCourse.getIdentification() +"\">\n" +
-                    "            <div class=\"selectable-div\">Teacher: " + selectedCourse.getTeacher().getIdentification() + " <br> Subject: " + selectedCourse.getSubject().getLabel() + " <br> " +
-                    "Number of students:"+ selectedCourse.getStudents().size() + "</div>\n" +
-                    "</label>";;
+                    "            <div class=\"selectable-div\"> Subject: " + selectedCourse.getSubject().getLabel() + "#" + selectedCourse.getIdentification() + " <br> " +
+                    " Teacher: " + selectedCourse.getTeacher().getIdentification() +
+                    "<br> Number of students:"+ selectedCourse.getStudents().size() + "</div>\n" +
+                    "</label>";
         }
     }
 
@@ -59,8 +60,9 @@
     else if( courses != null ){
         for(Course c : courses){
             mainDiv = mainDiv + "<label class=\"selectable-label\"> <input class=\"selectable-input\" type=\"radio\" name=\"course\" value=\"" + c.getIdentification() +"\">\n" +
-                    "            <div class=\"selectable-div\">Teacher: " + c.getTeacher().getIdentification() + " <br> Subject: " + c.getSubject().getLabel() + " <br> " +
-                    "Number of students:"+ c.getStudents().size() + "</div>\n" +
+                    "            <div class=\"selectable-div\"> Subject: " + c.getSubject().getLabel() + "#" + c.getIdentification() + " <br> " +
+                    " Teacher: " + c.getTeacher().getIdentification() +
+                    "<br> Number of students:"+ c.getStudents().size() + "</div>\n" +
                     "</label>";
         }
     }

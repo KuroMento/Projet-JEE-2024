@@ -1,6 +1,7 @@
 <%@ page import="fr.cyu.jee.model.User" %>
 <%@ page import="fr.cyu.jee.model.Permissions" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.text.SimpleDateFormat" %>
 <%
     String mainDiv = "<main class='main'>";
 
@@ -23,11 +24,14 @@
     else if( currentUser != null && currentUser.getPermissions() == Permissions.ADMIN){
         User selectedUser = (User) request.getAttribute("selectedUser");
         List<User> users = (List<User>) request.getAttribute("users");
+
+        // You selected an option for an object !
         if( selectedUser != null ){
+            SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
             if( option.equals("create")){
                 mainDiv = mainDiv +  "<input type=\"hidden\" name=\"action\" value=\"create\">"
                         + "<div class=\"form_input\">\n" +
-                        "     <label for=\"id\">User Identification | Username </label>\n" +
+                        "     <label for=\"user\">User Identification | Username </label>\n" +
                         "     <input type=\"text\" id=\"id\" name=\"id\" placeholder=\"Ketk\" required>\n" +
                         "  </div>\n"
                         + "<div class=\"form_input\">\n" +
@@ -101,17 +105,27 @@
             }
             if( option.equals("delete")){
                 mainDiv = mainDiv + "<label class=\"selectable-label\"> <input class=\"selectable-input\" type=\"radio\" name=\"id\" value=\"" + selectedUser.getIdentification() + "\"> " +
-                        "<div class=\"selectable-div\"> Username: " + selectedUser.getIdentification() + "</div> </label>"
+                        "<div class=\"selectable-div\"> Username: " + selectedUser.getIdentification() + " | Full Name : " + selectedUser.getFirstName() + " " + selectedUser.getLastName() + " | Mail " + selectedUser.getContact() + " | Status : " + selectedUser.getPermissions() + "</div> </label>"
                     +  "<input type=\"hidden\" name=\"action\" value=\"delete\">" + "<input type=\"hidden\" name=\"user\" value=\"" + selectedUser.getIdentification() + "\">"
                 + "<button type=\"submit\" class=\"form_button\">Delete User</button>";
             }
+            if( option.equals("profile") ){
+                mainDiv = mainDiv
+                        + "<p> Status : " + selectedUser.getPermissions() + "<br>"
+                        + " First Name : " + selectedUser.getFirstName() + "<br>"
+                        + " Last Name : " + selectedUser.getLastName() + "<br>"
+                        + " Contact / Email : " + selectedUser.getContact() + "<br>"
+                        + " Date of birth : " + sdf.format(selectedUser.getDateOfBirth()) + "<br></p>";
+            }
         }
+
+        // Basic printing of every user ! Also used for search option
         if( users != null && selectedUser == null){
             mainDiv = mainDiv + "<div><input type=\"search\" name=\"search\" placeholder=\"Enter a firstname, lastname or an email...\"/><button class=\"option_button\" type='submit'> Search User </button></div>";
             for(User u : users){
                 mainDiv = mainDiv +
                         "<label class=\"selectable-label\"> <input class=\"selectable-input\" type=\"radio\" name=\"id\" value=\"" + u.getIdentification() + "\"> " +
-                        "<div class=\"selectable-div\"> Username: " + u.getIdentification() + "</div> </label>";
+                        "<div class=\"selectable-div\"> Username: " + u.getIdentification() + " | Full Name : " + u.getFirstName() + " " + u.getLastName() + " | Mail " + u.getContact() + " | Status : " + u.getPermissions() + "</div> </label>";
             }
         }
     }
