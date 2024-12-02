@@ -65,8 +65,8 @@
                 mainDiv = mainDiv +  "<input type=\"hidden\" name=\"action\" value=\"update\">"
                         + "<input type=\"hidden\" name=\"id\" value=\"" + selectedUser.getIdentification() + "\">"
                         + "<div class=\"form_input\">\n" +
-                        "     <label for=\"id\">User Identification | Username </label>\n" +
-                        "     <input type=\"text\" id=\"id\" name=\"id\" value=\"" + selectedUser.getIdentification() + "\" required>\n" +
+                        "     <label for=\"user\">User Identification | Username </label>\n" +
+                        "     <input type=\"text\" id=\"user\" name=\"user\" value=\"" + selectedUser.getIdentification() + "\" required>\n" +
                         "  </div>\n"
                         + "<div class=\"form_input\">\n" +
                         "     <label for=\"pw\">User Password </label>\n" +
