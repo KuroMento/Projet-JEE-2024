@@ -10,4 +10,7 @@ import java.util.List;
 public interface CourseRepository extends JpaRepository<Course, Long> {
     List<Course> findAll();
     List<Course> findAllByTeacher_Identification(String identification);
+
+    void deleteCourseByIdentification(Long identification);
+    Course findCourseByIdentification(Long identification);
 }

@@ -1,7 +1,6 @@
 package fr.cyu.jee.controller;
 
 import fr.cyu.jee.model.Permissions;
-import fr.cyu.jee.model.Subject;
 import fr.cyu.jee.model.User;
 import fr.cyu.jee.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
@@ -20,6 +19,23 @@ import java.util.Date;
 public class UserController {
     @Autowired
     private UserRepository userRepository;
+
+    /**
+     *
+     * @param session
+     * @param model
+     * @param option attribute option
+     * @param action attribute action
+     * @param user attribute user
+     * @param id attribute id
+     * @param pw attribute pw
+     * @param firstName attribute firstName
+     * @param lastName attribute lastName
+     * @param contact attribute contact
+     * @param dateOfBirth attribute dateOfBirth
+     * @param permissions attribute permissions
+     * @return
+     */
     @Transactional
     @GetMapping("/user")
     public String userPage(HttpSession session, Model model, @RequestParam(defaultValue = "") String option, @RequestParam(defaultValue = "") String action,
@@ -28,6 +44,7 @@ public class UserController {
                            @RequestParam(defaultValue = "") String contact,@RequestParam(defaultValue = "") String dateOfBirth,
                            @RequestParam(defaultValue = "") String permissions){
         if(session.getAttribute("loggedUser") != null && ((User)session.getAttribute("loggedUser")).getPermissions() == Permissions.ADMIN){
+            //If an option was selected in the CRUD settings
             if(!option.equals("")){
                 switch(option){
                     case "create":
@@ -35,10 +52,9 @@ public class UserController {
                         model.addAttribute("selectedUser", new User());
                         break;
                     case "delete":
-                        System.out.println("DELETE");
+                        //System.out.println("DELETE");
                         if(!id.equals("")) {
-                            System.out.println(id);
-                            System.out.println("NOW");
+                            //System.out.println(id);
                             deleteUser(user);
                         }
                         break;
@@ -71,15 +87,15 @@ public class UserController {
         return "user";
     }
     /**
-     * Delete the subject with id as primary key
-     * @param id Long identifiant of subject
+     * Delete the user with id as primary key
+     * @param id String identifiant of user
      */
     public void deleteUser(String id){
         userRepository.deleteUserByIdentification(id);
     }
 
     /**
-     * Create a new subject with a specific label, description and coefficient
+     * Create a new user with specific parameters
      */
     public void createUser(String id, String pw, String contact, Permissions permissions, String firstName, String lastName, Date dateOfBirth){
         User newUser = new User();
@@ -94,8 +110,8 @@ public class UserController {
     }
 
     /**
-     * Update a specific subject of primary key id with its new data
-     * @param id Long id, primary key of subject
+     * Update a specific user of primary key id with its new data
+     * @param id String id, primary key of user
      */
     public void updateUser(String id){
         User user = userRepository.findUserByIdentification(id);
