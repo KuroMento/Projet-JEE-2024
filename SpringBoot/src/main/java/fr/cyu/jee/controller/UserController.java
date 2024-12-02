@@ -5,6 +5,7 @@ import fr.cyu.jee.ModelValidator;
 import fr.cyu.jee.model.Permissions;
 import fr.cyu.jee.model.User;
 import fr.cyu.jee.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -64,7 +65,7 @@ public class UserController {
                             if (!id.equals("")) {
                                 ModelValidator.validateParameter(id);
                                 model.addAttribute("option", "update");
-                                model.addAttribute("selectedSubject", userRepository.findUserByIdentification(id));
+                                model.addAttribute("selectedUser", userRepository.findUserByIdentification(id));
                             }
                             break;
                     }
@@ -74,6 +75,13 @@ public class UserController {
                     switch (action) {
                         case "create":
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd");
+                            ModelValidator.validateParameter(id);
+                            ModelValidator.validateParameter(firstName);
+                            ModelValidator.validateParameter(lastName);
+                            ModelValidator.validateParameter(permissions);
+                            ModelValidator.validateParameter(contact);
+                            ModelValidator.validateParameter(pw);
+                            ModelValidator.validateParameter(dateOfBirth);
                             try {
                                 createUser(id, pw, contact, Permissions.valueOf(permissions), firstName, lastName, formatter.parse(dateOfBirth));
                             } catch (ParseException e) {
@@ -81,7 +89,16 @@ public class UserController {
                             }
                             break;
                         case "update":
-                            updateUser(id);
+                            ModelValidator.validateParameter(id);
+                            ModelValidator.validateParameter(user);
+                            ModelValidator.validateParameter(firstName);
+                            ModelValidator.validateParameter(lastName);
+                            ModelValidator.validateParameter(permissions);
+                            ModelValidator.validateParameter(contact);
+                            ModelValidator.validateParameter(pw);
+                            ModelValidator.validateParameter(dateOfBirth);
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
+                            updateUser(id, user, firstName, lastName, Permissions.valueOf(permissions), contact, pw, format.parse(dateOfBirth));
                             break;
                     }
                 }
@@ -122,10 +139,16 @@ public class UserController {
     /**
      * Update a specific user of primary key id with its new data
      * @param id String id, primary key of user
+     * @param firstName String firstName, first name of user
+     * @param lastName String lastName, last name of user
+     * @param permissions Permission permissions, permission of user
+     * @param contact String contact, contact of user
+     * @param cryptedPassword String cryptedPassword, password of user
      */
-    public void updateUser(String id){
-        User user = userRepository.findUserByIdentification(id);
-        userRepository.save(user);
+    public void updateUser(String id, String newId, String firstName, String lastName, Permissions permissions, String contact, String cryptedPassword, Date dateOfBirth){
+        User oldUser = userRepository.findUserByIdentification(id);
+        createUser(newId,cryptedPassword,contact,permissions,firstName,lastName,dateOfBirth);
+        userRepository.delete(oldUser);
     }
 
 }
