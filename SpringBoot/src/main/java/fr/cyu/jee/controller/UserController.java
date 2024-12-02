@@ -6,6 +6,7 @@ import fr.cyu.jee.model.Permissions;
 import fr.cyu.jee.model.User;
 import fr.cyu.jee.repository.UserRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 @Controller
 public class UserController {
@@ -89,6 +91,7 @@ public class UserController {
                             }
                             break;
                         case "update":
+                            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
                             ModelValidator.validateParameter(id);
                             ModelValidator.validateParameter(user);
                             ModelValidator.validateParameter(firstName);
@@ -97,8 +100,11 @@ public class UserController {
                             ModelValidator.validateParameter(contact);
                             ModelValidator.validateParameter(pw);
                             ModelValidator.validateParameter(dateOfBirth);
-                            SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd");
-                            updateUser(id, user, firstName, lastName, Permissions.valueOf(permissions), contact, pw, format.parse(dateOfBirth));
+                            try {
+                                updateUser(id, user, firstName, lastName, Permissions.valueOf(permissions), contact, pw, format.parse(dateOfBirth));
+                            } catch (ParseException e) {
+                                throw new RuntimeException(e);
+                            }
                             break;
                     }
                 }
@@ -136,9 +142,13 @@ public class UserController {
         userRepository.save(newUser);
     }
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     /**
      * Update a specific user of primary key id with its new data
-     * @param id String id, primary key of user
+     * @param id String id, old primary key of user
+     * @param newId String newId, new primary key of user
      * @param firstName String firstName, first name of user
      * @param lastName String lastName, last name of user
      * @param permissions Permission permissions, permission of user
@@ -146,9 +156,28 @@ public class UserController {
      * @param cryptedPassword String cryptedPassword, password of user
      */
     public void updateUser(String id, String newId, String firstName, String lastName, Permissions permissions, String contact, String cryptedPassword, Date dateOfBirth){
-        User oldUser = userRepository.findUserByIdentification(id);
-        createUser(newId,cryptedPassword,contact,permissions,firstName,lastName,dateOfBirth);
-        userRepository.delete(oldUser);
+        if(id.equals(newId)){
+            User user = userRepository.findUserByIdentification(id);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setPermissions(permissions);
+            user.setContact(contact);
+            user.setCryptedPassword(cryptedPassword);
+            user.setDateOfBirth(dateOfBirth);
+        }
+        else {
+            User oldUser = entityManager.find(User.class, id);
+            User user = new User();
+            user.setIdentification(newId);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            user.setPermissions(permissions);
+            user.setContact(contact);
+            user.setCryptedPassword(cryptedPassword);
+            user.setDateOfBirth(dateOfBirth);
+            entityManager.remove(oldUser);
+            entityManager.persist(user);
+        }
     }
 
 }
